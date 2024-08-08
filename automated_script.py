@@ -32,6 +32,7 @@ def main():
         exit(-1)
 
     try:
+        wurzelBot.send_bees(tour=1)
         # Remove weed
         # BG-Премахване на плевели
         print(i18n.t('wimpb.remove_weed_from_all_gardens'))
@@ -43,18 +44,23 @@ def main():
 
         # Plant plants
         # BG-Посаждане на растения
-        while wurzelBot.hasEmptyFields():
-            lowest = wurzelBot.getLowestVegetableStockEntry()
-            if lowest == 'Your stock is empty':
-                break
-            print(i18n.t('wimpb.grow_plant_X', plant=lowest))
-            planted = wurzelBot.growVegetablesInGardens(lowest)
-            if planted == 0:
-                lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
-                if lowestSingle == 'Your stock is empty':
-                    break
-                print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
-                wurzelBot.growVegetablesInGardens(lowestSingle)
+        wurzelBot.growVegetablesInGardens("Orange")
+        wurzelBot.growVegetablesInGardens("Moorlilie")
+        wurzelBot.growPlantsInAquaGardens("Schilfsetzling")
+        wurzelBot.growPlantsInAquaGardens("Wasserknöterich")
+        wurzelBot.growPlantsInAquaGardens("Rohrkolben")
+        # while wurzelBot.hasEmptyFields():
+        #     lowest = wurzelBot.getLowestVegetableStockEntry()
+        #     if lowest == 'Your stock is empty':
+        #         break
+        #     print(i18n.t('wimpb.grow_plant_X', plant=lowest))
+        #     planted = wurzelBot.growVegetablesInGardens(lowest)
+        #     if planted == 0:
+        #         lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
+        #         if lowestSingle == 'Your stock is empty':
+        #             break
+        #         print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
+        #         wurzelBot.growVegetablesInGardens(lowestSingle)
 
         # Water plants
         # BG-Поливане на растенията
@@ -70,7 +76,13 @@ def main():
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
         print(i18n.t('wimpb.process_wimps'))
-        wurzelBot.sell_to_wimps(buy_from_shop=False)
+        wurzelBot.sell_to_wimps(buy_from_shop=True)
+
+        wurzelBot.check_herb_garden()
+        wurzelBot.check_greenhouse()
+        wurzelBot.check_park()
+        wurzelBot.cut_and_renew_bonsais()
+
     finally:
         # Close connection
         # BG-Затваряне на връзката
