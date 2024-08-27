@@ -556,8 +556,8 @@ class HerbGarden(Garden):
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
 
-                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                    self._httpConn.growPlant(to_plant, herbID, self._id)
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == list(self._VALID_FIELDS.keys())[-1] and len(to_plant) > 0):
+                    self._httpConn.grow(to_plant, herbID, self._id)
                     planted += len(to_plant)
                     to_plant = {}
                     
