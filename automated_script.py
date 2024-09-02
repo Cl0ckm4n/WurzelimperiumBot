@@ -44,11 +44,11 @@ def main():
 
         # Plant plants
         # BG-Посаждане на растения
-        wurzelBot.growVegetablesInGardens("Orange")
-        wurzelBot.growVegetablesInGardens("Moorlilie")
+        wurzelBot.growVegetablesInGardens("Kornblume")
+        # wurzelBot.growVegetablesInGardens("Moorlilie")
         wurzelBot.growPlantsInAquaGardens("Schilfsetzling")
         wurzelBot.growPlantsInAquaGardens("Wasserknöterich")
-        wurzelBot.growPlantsInAquaGardens("Rohrkolben")
+        wurzelBot.growPlantsInAquaGardens("Scheincalla")
         # while wurzelBot.hasEmptyFields():
         #     lowest = wurzelBot.getLowestVegetableStockEntry()
         #     if lowest == 'Your stock is empty':
