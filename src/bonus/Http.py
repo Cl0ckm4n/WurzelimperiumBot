@@ -17,6 +17,15 @@ class Http(object):
         except:
             pass
 
+    def set_daily_login_bonus_plant(self, plant_id):
+        try:
+            address = f'ajax/ajax.php?do=dailyloginbonus_setplant&pid={plant_id}&token={self.__http.token()}'
+            response, content = self.__http.sendRequest(address)
+            self.__http.checkIfHTTPStateIsOK(response)
+            return self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+
     def read_user_data(self):
         return self.__http.readUserDataFromServer(data_type="dailyloginbonus")['dailyloginbonus']
 

@@ -1,9 +1,11 @@
 from src.bonus.Http import Http
+from src.note.Note import Note
 import time, logging
 
 class Bonus:
     def __init__(self):
         self.__http = Http()
+        self.__note = Note()
         self.__log = logging.getLogger("bot.Bonus")
         self.__log.setLevel(logging.DEBUG)
 
@@ -15,7 +17,16 @@ class Bonus:
 
             if any(_ in bonus for _ in ('money', 'products')):
                 self.__http.get_daily_login_bonus(day)
-                time.sleep(3)
+                time.sleep(3) #TODO: why?
+
+            if 'plant' in bonus:
+                plant_id = self.__note.get_bonus_plant_id()
+                if plant_id and plant_id in bonus_data['products']:
+                    self.__http.set_daily_login_bonus_plant(plant_id)
+                    self.__log.info(f"Set daily login bonus plant to ID: {plant_id}")
+                else:
+                    self.__log.error(f"Plant-ID '{plant_id}' not selectable for bonus plant!")
+                time.sleep(3) #TODO: why?
 
     def collect_bonus_item_points(self):
         self.__http.init_garden_shed()

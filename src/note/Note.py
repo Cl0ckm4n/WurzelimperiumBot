@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from src.note.Http import Http
+from src.product.ProductData import ProductData
 
 class Note():
     """This class handles reading from the user notes"""
 
     def __init__(self):
         self.__http = Http()
+        self.__product_data = ProductData()
 
     def get_note(self):
         return self.__http.get_note()
@@ -51,3 +53,17 @@ class Note():
 
         # Return default [] if not found in note
         return []
+    
+
+    def get_bonus_plant_id(self) -> int:
+        note = self.get_note().replace('\r\n', '\n')
+        lines = note.split('\n')
+
+        for line in lines:
+            if line.strip() == '' or not line.startswith('bonusPlant:'):
+                continue
+
+            line = line.replace('bonusPlant:', '').strip()
+            plant_id = self.__product_data.get_product_by_name(line).get_id()
+            return plant_id
+        return None
