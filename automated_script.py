@@ -44,8 +44,8 @@ def main():
 
         # Plant plants
         # BG-Посаждане на растения
-        wurzelBot.growVegetablesInGardens("Kornblume")
-        # wurzelBot.growVegetablesInGardens("Moorlilie")
+        wurzelBot.growVegetablesInGardens("Apfel")
+        wurzelBot.growVegetablesInGardens("Gemeine Wegwarte")
         wurzelBot.growPlantsInAquaGardens("Schilfsetzling")
         wurzelBot.growPlantsInAquaGardens("Wasserknöterich")
         wurzelBot.growPlantsInAquaGardens("Scheincalla")
