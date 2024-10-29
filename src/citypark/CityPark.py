@@ -10,6 +10,7 @@ class CityPark():
         self.__http = Http()
         self.__log = logging.getLogger('bot.Park')
         self.__log.setLevel(logging.DEBUG)
+        self.__parkID = "1"
         self.__set_park_data(self.__http.init_park())
 
     def __set_park_data(self, content):
@@ -26,9 +27,20 @@ class CityPark():
             self.__log.info("Collected: {points} points, {money} wT, {parkpoints} parkpoints".format(points = self.__cashpoint["points"], money = self.__cashpoint["money"], parkpoints=self.__cashpoint["parkpoints"]))
             self.__set_park_data(content)
 
-    def __get_expired_deko(self, park_id=1):
+    def __get_all_deco(self):
+        """get all items"""
+        items = self.__data["data"]["park"][self.__parkID]["items"]
+        all_items = {}
+        for key, value in items.items():
+            if 'parent' in value: 
+                continue
+            all_items.update({key:value})
+        self.__log.info("count of all park items: {}".format(len(all_items)))            
+        return all_items
+
+    def __get_expired_deco(self):
         """get all expired items"""
-        items = self.__data["data"]["park"][str(park_id)]["items"]
+        items = self.__data["data"]["park"][self.__parkID]["items"]
         renewable_items = {}
         for key, value in items.items():
             if 'parent' in value: 
@@ -40,9 +52,17 @@ class CityPark():
     
     def renew_all_items(self):
         """renew all expired items"""
-        renewable_items = self.__get_expired_deko()
+        renewable_items = self.__get_expired_deco()
         for itemID in renewable_items.keys():
-            content = self.__http.renew_item(itemID)
+            content = self.__http.renew_item(itemID, self.__parkID)
             self.__set_park_data(content)
         self.__log.info("Renewed {} Items.".format(len(renewable_items)))
+
+    def remove_all_items(self) -> None:
+        all_items = self.__get_all_deco()
+        for itemID in all_items.keys():
+            content = self.__http.remove_item(itemID, self.__parkID)
+            self.__set_park_data(content)
+        self.__log.info("Removed {} Items.".format(len(all_items)))
+
             

@@ -664,6 +664,10 @@ class WurzelBot(object):
         if not self.honey:
             return
 
+        bee_hive_plant = self.note.get_bee_hive()
+        if bee_hive_plant:
+            self.change_all_hives_types(product_name=bee_hive_plant)
+
         honey_count = {}
         self.__update_honey_count(honey_count, self.honey.check_pour_honey())
 
@@ -683,7 +687,11 @@ class WurzelBot(object):
 
     def change_all_hives_types(self, product_name: str):
         if self.honey:
-            self.honey.change_all_hives_types(self.product_data.get_product_by_name(product_name).get_id())
+            product = self.product_data.get_product_by_name(product_name)
+            if product is not None:
+                self.honey.change_all_hives_types(product.get_id())
+            else:
+                self.__logBot.error(f"Could not get product: {product_name}")
 
     # Bonsai
     def cut_and_renew_bonsais(self):
@@ -698,6 +706,9 @@ class WurzelBot(object):
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
         self.park.collect_cash()
         self.park.renew_all_items()
+
+    def remove_park_items(self):
+        self.park.remove_all_items()
 
     # Herb garden
     def check_herb_garden(self):

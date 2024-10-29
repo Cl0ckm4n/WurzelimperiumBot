@@ -25,10 +25,18 @@ class Http(object):
         except:
             raise
 
-    def renew_item(self, tile, park_id=1):
+    def renew_item(self, tile, park_id):
         """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
         try:
             response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_renewitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
+            self.__http.checkIfHTTPStateIsOK(response)
+            return self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def remove_item(self, tile, park_id):
+        try:
+            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_removeitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
             self.__http.checkIfHTTPStateIsOK(response)
             return self.__http.generateJSONContentAndCheckForOK(content)
         except:

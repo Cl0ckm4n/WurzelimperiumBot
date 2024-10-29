@@ -699,6 +699,22 @@ class HTTPConnection(object):
                 if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
+                if 'tinkergame' in jContent: #Halloween Kostüm-Spaß
+                    tinker_items = jContent['tinkergame']
+                    for item, count in tinker_items.items():
+                        if item == 1:
+                            msg = msg + f"\n{count} Schnur"
+                        if item == 2:
+                            msg = msg + f"\n{count} Stoff"
+                        if item == 3:
+                            msg = msg + f"\n{count} Pappe"
+                        if item == 4:
+                            msg = msg + f"\n{count} Schaumstoff"
+                        if item == 5:
+                            msg = msg + f"\n{count} Farbe"
+                        if item == 6:
+                            msg = msg + f"\n{count} Klebeband"
+                    
                 print(msg)
                 self.__logHTTPConn.info(msg)
         except:

@@ -32,6 +32,8 @@ def main():
         exit(-1)
 
     try:
+        wurzelBot.note.get_note_settings()
+
         wurzelBot.send_bees(tour=1)
         # Remove weed
         # BG-Премахване на плевели
@@ -44,11 +46,13 @@ def main():
 
         # Plant plants
         # BG-Посаждане на растения
-        wurzelBot.growVegetablesInGardens("Kaffee")
-        # wurzelBot.growVegetablesInGardens("Gemeine Wegwarte")
-        wurzelBot.growPlantsInAquaGardens("Schilfsetzling")
-        wurzelBot.growPlantsInAquaGardens("Wasserfeder")
-        wurzelBot.growPlantsInAquaGardens("Sumpfdotterblume")
+        
+        wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_1())
+        wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_2())
+        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_1())
+        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_2())
+        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_edge())
+
         # while wurzelBot.hasEmptyFields():
         #     lowest = wurzelBot.getLowestVegetableStockEntry()
         #     if lowest == 'Your stock is empty':

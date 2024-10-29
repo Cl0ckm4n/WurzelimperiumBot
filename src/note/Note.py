@@ -1,18 +1,56 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from enum import Enum
+import logging
 from src.note.Http import Http
 from src.product.ProductData import ProductData
+
+
+class NoteSettings(Enum):
+
+    GARDEN_PLANT_1 = "gardenPlant1:"
+    GARDEN_PLANT_2 = "gardenPlant2:"
+    WATERGARDEN_PLANT_1 = "watergardenPlant1:"
+    WATERGARDEN_PLANT_2 = "watergardenPlant2:"
+    WATERGARDEN_PLANT_EDGE = "watergardenPlantEdge:"
+    BEE_HIVES = "beeHives:"
 
 class Note():
     """This class handles reading from the user notes"""
 
     def __init__(self):
         self.__http = Http()
+        self.__log = logging.getLogger(f'bot.{self.__class__.__name__}')
+        self.__log.setLevel(logging.DEBUG)
         self.__product_data = ProductData()
+        self._garden_plant_1 = None
+        self._garden_plant_2 = None
+        self._watergarden_plant_1 = None
+        self._watergarden_plant_2 = None
+        self._watergarden_plant_edge = None
+        self._bee_hives = None
 
     def get_note(self):
         return self.__http.get_note()
+    
+    def get_garden_plant_1(self) -> str:
+        return self._garden_plant_1
+    
+    def get_garden_plant_2(self) -> str:
+        return self._garden_plant_2
+    
+    def get_watergarden_plant_1(self) -> str:
+        return self._watergarden_plant_1
+    
+    def get_watergarden_plant_2(self) -> str:
+        return self._watergarden_plant_2
+    
+    def get_watergarden_plant_edge(self) -> str:
+        return self._watergarden_plant_edge
+    
+    def get_bee_hive(self) -> str:
+        return self._bee_hives
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -67,3 +105,37 @@ class Note():
             plant_id = self.__product_data.get_product_by_name(line).get_id()
             return plant_id
         return None
+    
+
+    def get_note_settings(self) -> None:
+        note = self.get_note().replace('\r\n', '\n')
+        lines = note.split('\n')
+
+        for line in lines:
+            if line.strip() == '':
+                continue
+            for setting in (NoteSettings):
+                if not line.startswith(setting.value):
+                    continue
+
+                line = line.replace(setting.value, '').strip()
+                if line.strip() == '':
+                    continue
+                try:
+                    plant_name = self.__product_data.get_product_by_name(line).get_name()
+                except:
+                    self.__log.error(f"Could not find plant: {line}")
+                else:
+
+                    if setting == NoteSettings.GARDEN_PLANT_1:
+                        self._garden_plant_1 = plant_name
+                    if setting == NoteSettings.GARDEN_PLANT_2:
+                        self._garden_plant_2 = plant_name
+                    if setting == NoteSettings.WATERGARDEN_PLANT_1:
+                        self._watergarden_plant_1 = plant_name
+                    if setting == NoteSettings.WATERGARDEN_PLANT_2:
+                        self._watergarden_plant_2 = plant_name
+                    if setting == NoteSettings.WATERGARDEN_PLANT_EDGE:
+                        self._watergarden_plant_edge = plant_name
+                    if setting == NoteSettings.BEE_HIVES:
+                        self._bee_hives = plant_name
