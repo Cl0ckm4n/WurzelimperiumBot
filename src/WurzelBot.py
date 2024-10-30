@@ -430,6 +430,10 @@ class WurzelBot(object):
         #BG-Засажда колкото е възможно повече растения от определен вид през всички градини.
         planted = 0
 
+        if productName is None:
+            logMsg = f'Plant "{productName}" not found'
+            return -1
+
         product = self.product_data.get_product_by_name(productName)
 
         if product is None:
