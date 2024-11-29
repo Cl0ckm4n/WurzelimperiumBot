@@ -36,6 +36,10 @@ class ProductData():
         # Set value for Coin manually because it is not listed in the table
         self.get_product_by_id(0).set_price_npc(300.0)
 
+        # event plants
+        self.get_product_by_id(112).set_price_npc(0) #Weihnachtskaktus
+        self.get_product_by_id(156).set_price_npc(0) #Pfingstrose
+
     def get_product_by_id(self, id):
         product: Product
         for product in self.__products:
