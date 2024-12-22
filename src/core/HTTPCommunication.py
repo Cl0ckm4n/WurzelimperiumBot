@@ -698,7 +698,10 @@ class HTTPConnection(object):
                     msg = msg + f"\n{biogas} Gartenabfälle"
                 if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
-                    msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
+                    msg = msg + f"\n{eventitems} Eventitems" #TODO: check which event is active
+                if 'collectevent' in jContent: #Schneeballschlacht
+                    eventitems = jContent['collectevent']
+                    msg = msg + f"\n{eventitems} snowballs" #TODO: check which event is active
                 if 'tinkergame' in jContent: #Halloween Kostüm-Spaß
                     tinker_items = jContent['tinkergame']
                     for item, count in tinker_items.items():
