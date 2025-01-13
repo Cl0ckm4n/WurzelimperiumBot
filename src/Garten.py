@@ -136,10 +136,10 @@ class Garden():
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
 
-    def get_grown_fields(self):
-        """Returns all grown fields in the garden."""
+    def get_growing_fields(self):
+        """Returns all growing fields in the garden."""
         try:
-            return self._httpConn.getEmptyFieldsOfGarden(self._id, param="grown")
+            return self._httpConn.getEmptyFieldsOfGarden(self._id, param="growing")
         except:
             self._logGarden.error(f'Konnte bepflanzte Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
@@ -197,11 +197,11 @@ class Garden():
     def harvest_unfinished(self):
         #BG- """Отглежда растение от всякакъв размер."""
 
-        grown_fields = self.get_grown_fields()
-        print('grown_fields:', grown_fields)
+        growing_fields = self.get_growing_fields()
+        print('growing_fields:', growing_fields)
 
         try:
-            for field, plant_id in grown_fields.items():
+            for field, plant_id in growing_fields.items():
                 sx = ProductData().get_product_by_id(plant_id).get_sx()
                 sy = ProductData().get_product_by_id(plant_id).get_sy()
                 fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)

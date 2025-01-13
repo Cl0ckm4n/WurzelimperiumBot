@@ -24,6 +24,7 @@ from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
 from src.shop.ShopProducts import ShopProducts
 from src.citypark.CityPark import CityPark
+from src.biogas.Biogas import Biogas
 from src.core.User import User
 from src.wimp.Wimp import Wimp
 import logging, i18n, datetime
@@ -59,6 +60,7 @@ class WurzelBot(object):
         self.note = Note()
         self.park = None
         self.greenhouse = None
+        self.biogas = None
 
 
     def __init_gardens(self):
@@ -86,6 +88,9 @@ class WurzelBot(object):
 
             if self.feature.is_greenhouse_available() is True:
                 self.greenhouse = Greenhouse()
+
+            if self.feature.is_biogas_available() is True:
+                self.biogas = Biogas()
 
         except:
             raise
@@ -403,7 +408,24 @@ class WurzelBot(object):
     def harvest(self):
         """Harvest all gardens"""
         try:
+            garden: Garden = None
             for garden in self.gardens:
+                # check rubbish for biogas
+                if self.feature.is_biogas_available():
+                    j_content = self.__HTTPConn._changeGarden(garden.getID())
+                    grown_plants = self.__HTTPConn._get_grown_plants(j_content)
+                    rubbish_to_collect = self.biogas.calculate_rubbish(grown_plants)
+                    print('➡ src/WurzelBot.py:420 rubbish_to_collect:', rubbish_to_collect)
+
+                    if not self.biogas.check_rubbish_capacity(rubbish_to_collect):
+                        counter = 0
+                        print('➡ src/WurzelBot.py:425 counter:', counter)
+                        while not self.biogas.check_rubbish_capacity(rubbish_to_collect) and counter < 20:
+                            self.biogas.sell_to_wimp(slot=1)
+                            counter += 1
+                            print('➡ src/WurzelBot.py:423 counter:', counter)
+
+                #if capacity is available: harvest garden
                 garden.harvest()
 
             if self.feature.is_aqua_garden_available():

@@ -42,3 +42,8 @@ class Feature():
         if self.__user.get_level() < 12:
             return False
         return self.__http.is_greenhouse_available()
+    
+    def is_biogas_available(self) -> bool:
+        if self.__user.get_level() < 25:
+            return False
+        return self.__http.is_biogas_available()

@@ -8,6 +8,7 @@ Created on 21.03.2017
 
 from urllib.parse import urlencode
 import json, re, httplib2, yaml, time, logging, math, i18n
+from collections import Counter
 from http.cookies import SimpleCookie
 from http import HTTPStatus
 from src.core.HttpError import HTTPStateError, JSONError, HTTPRequestError, YAMLError
@@ -296,15 +297,15 @@ class HTTPConnection(object):
 
         return emptyFields
     
-    def __find_grown_fields(self, jContent):
+    def __find_growing_fields(self, jContent):
         """Sucht im JSON Content nach Felder die bepflanzt sind und gibt diese zurück."""
-        grown_fields = {}
+        growing_fields = {}
         for index in jContent['grow']:
             field = index[0]
             plant_id = index[1]
-            grown_fields.update({field: plant_id})
+            growing_fields.update({field: plant_id})
 
-        return grown_fields
+        return growing_fields
 
     def __findWeedFieldsFromJSONContent(self, jContent):
         """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
@@ -325,8 +326,29 @@ class HTTPConnection(object):
         """Returns list of growing plants from JSON content"""
         growingPlants = []
         for field in jContent['grow']:
-            growingPlants.append(field[1])
+            growingPlants.append(str(field[1]))
         return growingPlants
+    
+    def _get_grown_plants(self, j_content):
+        """Returns list of grown plants from JSON content"""
+        plants_in_garden = []
+        for field, attributes in j_content['garden'].items():
+            if not attributes[1] == 1 and attributes[2] == 1 and attributes[5] == 1: # calc garden (only index 1,1) - growing plants && eintrag 6 muss == 1 (d.h. Pflanze; 4 = Deko)
+                print('➡ src/core/HTTPCommunication.py:339 attributes1:', attributes[1])
+                print('➡ src/core/HTTPCommunication.py:339 attributes2:', attributes[2])
+                print('➡ src/core/HTTPCommunication.py:339 attributes5:', attributes[5])
+                continue
+            plants_in_garden.append(str(attributes[0]))
+        print('➡ src/core/HTTPCommunication.py:339 plants_in_garden:', plants_in_garden)
+
+        growing_plants = self.__findGrowingPlantsFromJSONContent(j_content)
+        grown_plants = Counter(plants_in_garden) - Counter(growing_plants)
+        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(plants_in_garden))
+        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(growing_plants))
+        print('➡ src/core/HTTPCommunication.py:341 result:', grown_plants)
+        
+        return grown_plants
+
 
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
@@ -633,8 +655,8 @@ class HTTPConnection(object):
             jContent = self.generateJSONContentAndCheckForOK(content)
             if param == "empty":
                 emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
-            elif param == "grown":
-                emptyFields = self.__find_grown_fields(jContent)
+            elif param == "growing":
+                emptyFields = self.__find_growing_fields(jContent)
         except:
             raise
         else:
