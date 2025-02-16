@@ -18,6 +18,7 @@ from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
+from src.minigames.fair.Fair import Fair
 from src.Messenger import Messenger
 from src.note.Note import Note
 from src.product.ProductData import ProductData
@@ -61,6 +62,7 @@ class WurzelBot(object):
         self.park = None
         self.greenhouse = None
         self.biogas = None
+        self.fair = None
 
 
     def __init_gardens(self):
@@ -91,6 +93,8 @@ class WurzelBot(object):
 
             if self.feature.is_biogas_available() is True:
                 self.biogas = Biogas()
+
+            self.fair = Fair()
 
         except:
             raise
@@ -748,3 +752,9 @@ class WurzelBot(object):
     # Greenhouse
     def check_greenhouse(self):
         self.greenhouse.do_all_cactus_care()
+
+    # Minigames
+    def play_fair(self):
+        self.fair.craft_tickets()
+        self.fair.play_thimblerig()
+        self.fair.play_wetgnome()

@@ -718,6 +718,9 @@ class HTTPConnection(object):
                 if 'biogas' in jContent:
                     biogas = jContent['biogas']
                     msg = msg + f"\n{biogas} Gartenabfälle"
+                if 'fair' in jContent: #Jahrmarkt
+                    ticket_snippets = jContent['fair']
+                    msg = msg + f"\n{ticket_snippets} Ticketschnipsel"
                 if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO: check which event is active
