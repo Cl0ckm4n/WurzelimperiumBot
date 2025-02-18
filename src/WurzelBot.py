@@ -94,7 +94,7 @@ class WurzelBot(object):
             if self.feature.is_biogas_available() is True:
                 self.biogas = Biogas()
 
-            self.fair = Fair()
+            # self.fair = Fair() #TODO: check availability
 
         except:
             raise
