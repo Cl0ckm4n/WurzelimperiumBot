@@ -24,6 +24,7 @@ from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
 from src.shop.ShopProducts import ShopProducts
+from src.snailracing.Snailracing import Snailracing
 from src.citypark.CityPark import CityPark
 from src.biogas.Biogas import Biogas
 from src.core.User import User
@@ -62,6 +63,7 @@ class WurzelBot(object):
         self.park = None
         self.greenhouse = None
         self.biogas = None
+        self.snailracing = None
         # self.fair = None
 
 
@@ -93,6 +95,9 @@ class WurzelBot(object):
 
             if self.feature.is_biogas_available() is True:
                 self.biogas = Biogas()
+
+            if self.feature.is_snailracing_available() is True:
+                self.snailracing = Snailracing()
 
             # self.fair = Fair() #TODO: check availability
 
@@ -758,3 +763,6 @@ class WurzelBot(object):
     #     self.fair.craft_tickets()
     #     self.fair.play_thimblerig()
     #     self.fair.play_wetgnome()
+    # Snailracing
+    def check_snailracing(self):
+        self.snailracing.check_race()

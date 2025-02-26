@@ -63,3 +63,15 @@ class Http(object):
                 return False
         except:
             raise
+
+    def is_snailracing_available(self):
+        try:
+            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__http.token()}')
+            self.__http.checkIfHTTPStateIsOK(response)
+            content = self.__http.generateJSONContentAndCheckForOK(content)
+            if 'snailracing' in content['data']['location']:
+                return content['data']['location']['snailracing']['bought'] == 1
+            else:
+                return False
+        except:
+            raise
