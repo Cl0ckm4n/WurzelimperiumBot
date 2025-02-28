@@ -43,8 +43,11 @@ class Snailracing:
         print('➡ src/snailracing/Snailracing.py:139 self.__data:', self.__data)
         self.__race_energy = int(self.__data["data"]["race"]["energy"])
         print('➡ src/snailracing/Snailracing.py:141 self.__race_energy:', self.__race_energy)
-    def check_race(self, pid=473, amount=1):
+        self.__race_remain = int(self.__data["data"]["race"].get("remain", "idle"))
+        print('➡ src/snailracing/Snailracing.py:143 self.__race_remain:', self.__race_remain)
+    def check_race_feeding(self, pid=473, amount=1):
         print('➡ src/snailracing/Snailracing.py:434 self.__race_energy:', self.__race_energy)
-        if self.__race_energy < 100000: 
+        if self.__race_energy < 100000 and self.__race_remain >= 10000: 
             print("FEEEEEEEEEEEEEEEEEEEEEEED")
-            self.__http.feed_snail(pid, amount) # feed snail with energy bar
+            content = self.__http.feed_snail(pid, amount) # feed snail with energy bar
+            self.__set_data(content)

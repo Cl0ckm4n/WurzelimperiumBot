@@ -765,4 +765,4 @@ class WurzelBot(object):
     #     self.fair.play_wetgnome()
     # Snailracing
     def check_snailracing(self):
-        self.snailracing.check_race()
+        self.snailracing.check_race_feeding()
