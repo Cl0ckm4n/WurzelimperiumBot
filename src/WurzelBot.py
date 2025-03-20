@@ -16,6 +16,7 @@ from src.core.Feature import Feature
 from src.Garten import Garden, AquaGarden, HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
+from src.ivyhouse.Ivyhouse import Ivyhouse
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
 # from src.minigames.fair.Fair import Fair
@@ -64,6 +65,7 @@ class WurzelBot(object):
         self.greenhouse = None
         self.biogas = None
         self.snailracing = None
+        self.ivyhouse = None
         # self.fair = None
 
 
@@ -98,6 +100,9 @@ class WurzelBot(object):
 
             if self.feature.is_snailracing_available() is True:
                 self.snailracing = Snailracing()
+
+            if self.feature.is_ivyhouse_available() is True:
+                self.ivyhouse = Ivyhouse()
 
             # self.fair = Fair() #TODO: check availability
 
@@ -766,3 +771,5 @@ class WurzelBot(object):
     # Snailracing
     def check_snailracing(self):
         self.snailracing.check_race_feeding()
+    def check_ivyhouse(self):
+        self.ivyhouse.check_breed()
