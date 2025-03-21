@@ -25,11 +25,13 @@ class Ivyhouse():
         print('➡ src/ivyhouse/Ivyhouse.py:24 self.__breed:', type(self.__breed))
 
     def __remove_pest(self):
-        if self.__breed["pest"]:
+        if self.__breed and self.__breed["pest"]:
             print('➡ src/ivyhouse/Ivyhouse.py:29 self.__breed["pest"]:', self.__breed["pest"])
-            for pest in self.__breed["pest"].keys():
-                print('➡ src/ivyhouse/Ivyhouse.py:26 pest:', pest)
-                self.__http.remove_pest(name=pest, pos=1)
+            for name, occurrence in self.__breed["pest"].items():
+                print('➡ src/ivyhouse/Ivyhouse.py:31 occurrence:', occurrence)
+                if occurrence:
+                    print('➡ src/ivyhouse/Ivyhouse.py:26 pest:', name)
+                    self.__http.remove_pest(name=name, pos=1) #TODO: pos anhängig von list?!
 
     def __check_weather(self):
         weather = self.__breed["weather"].get("name", None)
