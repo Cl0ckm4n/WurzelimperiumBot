@@ -5,13 +5,13 @@
 from enum import Enum
 
 #IVY
-BUTTERCUP = 2
-GOLDCHILD = 4
+BUTTERCUP_2 = 2
+GOLDCHILD_4 = 4
 
 # Weather
 WEATHER = {
-    "sun": 272, #weather2
-    "cold":134, #weather4
+    "sun": "weather2",
+    "cold": "weather4",
     "hail":"weather6",
     "rain":"weather8",
     "snow":"weather10",

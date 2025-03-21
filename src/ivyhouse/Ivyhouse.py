@@ -22,7 +22,8 @@ class Ivyhouse():
         print('➡ src/ivyhouse/Ivyhouse.py:22 self.__data:', self.__data)
         self.__breed = self.__data["breed"]
         print('➡ src/ivyhouse/Ivyhouse.py:24 self.__breed:', self.__breed)
-        print('➡ src/ivyhouse/Ivyhouse.py:24 self.__breed:', type(self.__breed))
+        self.__items = self.__data["items"]
+        print('➡ src/ivyhouse/Ivyhouse.py:26 self.__items:', self.__items)
 
     def __remove_pest(self):
         if self.__breed and self.__breed["pest"]:
@@ -36,8 +37,8 @@ class Ivyhouse():
     def __check_weather(self):
         weather = self.__breed["weather"].get("name", None)
         print('➡ src/ivyhouse/Ivyhouse.py:36 weather:', weather)
-        weather_id = WEATHER.get(weather, 999)
-        print('➡ src/ivyhouse/Ivyhouse.py:42 weather_id:', weather_id)
+        weather_name = WEATHER.get(weather, 0)
+        print('➡ src/ivyhouse/Ivyhouse.py:36 weather_name:', weather_name)
         weather_remain = self.__breed["weather"].get("remain", -1)
         print('➡ src/ivyhouse/Ivyhouse.py:38 weather_remain:', weather_remain)
         weather_item = self.__breed["weather"].get("item", 999)
@@ -52,19 +53,39 @@ class Ivyhouse():
             self.__http.remove_weather()
 
         if weather_item_remain < 0:
-            print(f"set weather id to {weather_id}")
+            item_id = self.__search_item(weather)
+            if not item_id:
+                print("BUY")
+                if weather_name:
+                    self.__http.buy_item(name=weather_name, slot=1, amount=1)
+                    self.__update
+                    item_id = self.__search_item(weather)
+            print('➡ src/ivyhouse/Ivyhouse.py:59 item_id:', item_id)
+            weather_id = item_id
             self.__http.set_weather(id=weather_id)
+
+    def __search_item(self, name):
+        id = 0
+        values = self.__items.values()
+
+        for listitem in values:
+            item_name = listitem.get("name", 0)
+            id = listitem.get("id", 0)
+            if item_name == name:
+                print('➡ src/ivyhouse/Ivyhouse.py:72 id:', id)
+                return id
 
     def __check_deco(self):
         pass
 
     def check_breed(self, slot):
-        
-        
         if self.__breed == 0:
             print("### START")
-            content = self.__http.start_breed(slot)
-            self.__update(content)
+            if slot:
+                content = self.__http.start_breed(slot)
+                self.__update(content)
+            else:
+                print("No ivy type specified!")
             # weather
             # deco
 
