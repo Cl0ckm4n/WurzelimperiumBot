@@ -15,6 +15,7 @@ class NoteSettings(Enum):
     WATERGARDEN_PLANT_2 = "watergardenPlant2:"
     WATERGARDEN_PLANT_EDGE = "watergardenPlantEdge:"
     BEE_HIVES = "beeHives:"
+    IVY_TYPE = "ivy:"
 
 class Note():
     """This class handles reading from the user notes"""
@@ -30,6 +31,7 @@ class Note():
         self._watergarden_plant_2 = None
         self._watergarden_plant_edge = None
         self._bee_hives = None
+        self._ivy = None
 
     def get_note(self):
         return self.__http.get_note()
@@ -51,6 +53,9 @@ class Note():
     
     def get_bee_hive(self) -> str:
         return self._bee_hives
+    
+    def get_ivy(self) -> str:
+        return self._ivy
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -122,7 +127,11 @@ class Note():
                 if line.strip() == '':
                     continue
                 try:
-                    plant_name = self.__product_data.get_product_by_name(line).get_name()
+                    if setting.value == NoteSettings.IVY_TYPE:
+                        self._ivy = line
+                        print('➡ src/note/Note.py:128 self._ivy:', self._ivy)
+                    else:
+                        plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:
                     self.__log.error(f"Could not find plant: {line}")
                 else:

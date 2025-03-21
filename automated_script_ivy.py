@@ -31,7 +31,9 @@ def main():
         exit(-1)
 
     try:
-        wurzelBot.check_ivyhouse()
+        wurzelBot.note.get_note_settings()
+        ivy_type = wurzelBot.note.get_ivy() #1,...7
+        wurzelBot.check_ivyhouse(ivy_type)
 
     # Close connection
     finally:

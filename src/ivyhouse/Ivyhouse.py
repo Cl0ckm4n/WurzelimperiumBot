@@ -58,7 +58,7 @@ class Ivyhouse():
     def __check_deco(self):
         pass
 
-    def check_breed(self, slot=GOLDCHILD):
+    def check_breed(self, slot):
         
         
         if self.__breed == 0:

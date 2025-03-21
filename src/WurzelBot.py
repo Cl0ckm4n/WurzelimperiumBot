@@ -771,5 +771,5 @@ class WurzelBot(object):
     # Snailracing
     def check_snailracing(self):
         self.snailracing.check_race_feeding()
-    def check_ivyhouse(self):
-        self.ivyhouse.check_breed()
+    def check_ivyhouse(self, slot):
+        self.ivyhouse.check_breed(slot)
