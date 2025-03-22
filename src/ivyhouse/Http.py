@@ -42,7 +42,7 @@ class Http(object):
             raise
 
     def remove_pest(self, name, pos):
-        #name = pest (Schnecke), water (Wassertropfen)
+        #name = pest (Insekten), water (Wassertropfen), mold (Schimmel)
         #pos = 1, weitere?
         address = f'ajax/ajax.php?do=ivyhouse_remove_pest&name={name}&pos={pos}&token={self.__http.token()}'
         try:
@@ -55,7 +55,6 @@ class Http(object):
 
     def set_deco(self, slot, id):
         #slot = 1,2,3,4
-        #id = 143 (Vogel)
         address = f'ajax/ajax.php?do=ivyhouse_set_deco&slot={slot}&id={id}&token={self.__http.token()}'
         try:
             response, content = self.__http.sendRequest(address)
@@ -65,7 +64,7 @@ class Http(object):
         except:
             raise
 
-    def set_deco(self, slot):
+    def remove_deco(self, slot):
         #slot = 1,2,3,4
         address = f'ajax/ajax.php?do=ivyhouse_remove_deco&slot={slot}&token={self.__http.token()}'
         try:
@@ -77,7 +76,6 @@ class Http(object):
             raise
 
     def set_weather(self, id):
-        #id = 145(???)
         address = f'ajax/ajax.php?do=ivyhouse_set_weather_item&id={id}&token={self.__http.token()}'
         try:
             response, content = self.__http.sendRequest(address)
