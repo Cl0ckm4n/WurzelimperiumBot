@@ -50,32 +50,34 @@ class Ivyhouse():
         
         if weather_item and not weather_name == weather_item_name:
             print("remove Weather")
-            self.__http.remove_weather()
+            content = self.__http.remove_weather()
+            self.__update(content)
 
         if weather_item_remain < 0:
-            item_id = self.__search_item(weather_name)
+            item_id = self.__search_item_id(weather_name)
             if not item_id:
-                print("BUY")
+                print("BUY WEATHER")
                 if weather_name:
                     print(f"would buy: {weather_name}")
                     content = self.__http.buy_item(name=weather_name, slot=1, amount=1)
                     self.__update(content)
-                    item_id = self.__search_item(weather)
+                    item_id = self.__search_item_id(weather)
             print("###SET WEATHER###")
             print('➡ src/ivyhouse/Ivyhouse.py:59 item_id:', item_id)
             weather_id = item_id
             content = self.__http.set_weather(id=weather_id)
-            print('➡ src/ivyhouse/Ivyhouse.py:66 content:', content)
             self.__update(content)
 
-    def __search_item(self, name):
+    def __search_item_id(self, name):
         id = 0
         values = self.__items.values()
+        print('➡ src/ivyhouse/Ivyhouse.py:72 values:', values)
 
         for listitem in values:
             item_name = listitem.get("name", 0)
             id = listitem.get("id", 0)
-            if item_name == name:
+            instock = listitem.get("instock", 0)
+            if item_name == name and instock == "1":
                 print('➡ src/ivyhouse/Ivyhouse.py:72 id:', id)
                 return id
             
@@ -91,8 +93,62 @@ class Ivyhouse():
                 print('➡ src/ivyhouse/Ivyhouse.py:72 item_name:', item_name)
                 return item_name
 
-    def __check_deco(self):
-        pass
+    def __check_deco(self, deco_name=DECO.get("Licht 1")):
+        deco_slots: dict = self.__breed.get("deco") #dict-dict
+        print('➡ src/ivyhouse/Ivyhouse.py:97 deco_slots:', deco_slots)
+        if not deco_slots:
+            deco_slots = {}
+
+        slot: int
+        deco: dict
+        used_slots = []
+        deco_data = []
+        for slot, deco in deco_slots.items():
+            used_slots.append(int(slot))
+            deco_data.append(deco)
+            print('➡ src/ivyhouse/Ivyhouse.py:100 slot:', slot)
+            print('➡ src/ivyhouse/Ivyhouse.py:100 deco:', deco)
+        
+        print('➡ src/ivyhouse/Ivyhouse.py:104 used_slots:', used_slots)
+        print('➡ src/ivyhouse/Ivyhouse.py:106 deco_data:', deco_data)
+        available_deco_slots = self.__get_deco_slots()
+        for slot in range(1, available_deco_slots+1):
+            print('➡ src/ivyhouse/Ivyhouse.py:98 slot:', slot)
+            if slot in used_slots:
+                print(slot)
+                #check remain
+                deco_remain = deco_slots.get(str(slot)).get("remain")
+                print('➡ src/ivyhouse/Ivyhouse.py:118 deco_remain:', deco_remain)
+                print('➡ src/ivyhouse/Ivyhouse.py:118 deco_remain:', type(deco_remain))
+                if deco_remain > 0:
+                    continue
+            print("###CHECK DECO###")
+            print(deco_name)
+
+            deco_id = self.__search_item_id(name=deco_name)
+            print('➡ src/ivyhouse/Ivyhouse.py:126 deco_id:', deco_id)
+            if not deco_id:
+                print("###BUY DECO")
+                content = self.__http.buy_item(name=deco_name, slot=1, amount=1)
+                self.__update(content)
+            
+            deco_id = self.__search_item_id(name=deco_name)
+            if deco_id:
+                print("###SET DECO")
+                content = self.__http.set_deco(slot=slot, id=deco_id)
+                self.__update(content)
+            
+
+    def __get_deco_slots(self) -> int:
+        level = self.__data.get("level", 0)
+        deco_slots = 1
+        if level >= 2:
+            deco_slots += 1
+        if level >= 5:
+            deco_slots += 1
+        if level >= 10:
+            deco_slots += 1
+        return deco_slots
 
     def check_breed(self, slot):
         if self.__breed == 0:
@@ -103,8 +159,6 @@ class Ivyhouse():
             else:
                 print("No ivy type specified!")
                 return
-            # weather
-            # deco
 
         self.__breed.get("remain", 0)
         print('➡ src/ivyhouse/Ivyhouse.py:32 self.__breed.get("remain":', self.__breed.get("remain"))
@@ -119,6 +173,6 @@ class Ivyhouse():
         #remain > 0
         self.__remove_pest()
         self.__check_weather()
-           
+        self.__check_deco()
 
 
