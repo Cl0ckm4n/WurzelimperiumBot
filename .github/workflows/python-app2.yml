@@ -1,12 +1,12 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Wurzelimperium Bot - 10m (Ivy)
+name: Wurzelimperium Bot - 5m (Ivy)
 
 on:
   workflow_dispatch:
   schedule: # UTC timezone, execute every 2:10h
-    - cron: "5/10 * * * *"
+    - cron: "2/5 * * * *"
 
 jobs:
   build:
