@@ -54,6 +54,8 @@ class Ivyhouse():
             self.__update(content)
 
         if weather_item_remain < 0:
+            content = self.__http.remove_weather()
+            self.__update(content)
             item_id = self.__search_item_id(weather_name)
             if not item_id:
                 print("BUY WEATHER")
@@ -122,6 +124,9 @@ class Ivyhouse():
                 print('➡ src/ivyhouse/Ivyhouse.py:118 deco_remain:', type(deco_remain))
                 if deco_remain > 0:
                     continue
+                if deco_remain <= 0:
+                    content = self.__http.remove_deco()
+                    self.__update(content)
             print("###CHECK DECO###")
             print(deco_name)
 
