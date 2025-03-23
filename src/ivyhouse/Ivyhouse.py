@@ -24,6 +24,10 @@ class Ivyhouse():
         print('➡ src/ivyhouse/Ivyhouse.py:24 self.__breed:', self.__breed)
         self.__items = self.__data["items"]
         print('➡ src/ivyhouse/Ivyhouse.py:26 self.__items:', self.__items)
+        if "rewards" in jContent['data']:
+            print("###REWARDS")
+            print(jContent['data']['rewards'])
+            print(self.__breed.get("daily", "no daily found"))
 
     def __remove_pest(self):
         if self.__breed and self.__breed["pest"]:
@@ -48,14 +52,11 @@ class Ivyhouse():
         weather_item_remain = self.__breed["weather"].get("itemremain", -1)
         print('➡ src/ivyhouse/Ivyhouse.py:42 weather_item_remain:', weather_item_remain)
         
-        if weather_item and not weather_name == weather_item_name:
+        if weather_item and not weather_name == weather_item_name or weather_item_remain < 0: #anderes Wetter
             print("remove Weather")
             content = self.__http.remove_weather()
             self.__update(content)
 
-        if weather_item_remain < 0:
-            content = self.__http.remove_weather()
-            self.__update(content)
             item_id = self.__search_item_id(weather_name)
             if not item_id:
                 print("BUY WEATHER")
@@ -65,7 +66,7 @@ class Ivyhouse():
                     self.__update(content)
                     item_id = self.__search_item_id(weather)
             print("###SET WEATHER###")
-            print('➡ src/ivyhouse/Ivyhouse.py:59 item_id:', item_id)
+            print('➡ src/ivyhouse/Ivyhouse.py:59x item_id:', item_id)
             weather_id = item_id
             content = self.__http.set_weather(id=weather_id)
             self.__update(content)
@@ -99,7 +100,7 @@ class Ivyhouse():
         deco_slots: dict = self.__breed.get("deco") #dict-dict
         print('➡ src/ivyhouse/Ivyhouse.py:97 deco_slots:', deco_slots)
         if not deco_slots:
-            deco_slots = {}
+            deco_slots = {} #no deco in use
 
         slot: int
         deco: dict
@@ -125,7 +126,7 @@ class Ivyhouse():
                 if deco_remain > 0:
                     continue
                 if deco_remain <= 0:
-                    content = self.__http.remove_deco()
+                    content = self.__http.remove_deco(slot)
                     self.__update(content)
             print("###CHECK DECO###")
             print(deco_name)
