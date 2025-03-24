@@ -64,7 +64,7 @@ class Ivyhouse():
                     print(f"would buy: {weather_name}")
                     content = self.__http.buy_item(name=weather_name, slot=1, amount=1)
                     self.__update(content)
-                    item_id = self.__search_item_id(weather)
+                    item_id = self.__search_item_id(weather_name)
             print("###SET WEATHER###")
             print('➡ src/ivyhouse/Ivyhouse.py:59x item_id:', item_id)
             weather_id = item_id
