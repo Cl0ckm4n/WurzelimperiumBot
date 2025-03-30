@@ -127,7 +127,7 @@ class Note():
                 if line.strip() == '':
                     continue
                 try:
-                    if setting.value == NoteSettings.IVY_TYPE:
+                    if setting == NoteSettings.IVY_TYPE:
                         self._ivy = line
                         print('➡ src/note/Note.py:128 self._ivy:', self._ivy)
                     else:
