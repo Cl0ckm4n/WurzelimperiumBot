@@ -13,6 +13,7 @@ from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
 from src.core.Feature import Feature
+from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.Garten import Garden, AquaGarden, HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
@@ -105,6 +106,9 @@ class WurzelBot(object):
                 self.ivyhouse = Ivyhouse()
 
             # self.fair = Fair() #TODO: check availability
+
+            self.decogarden1 = Decogarden1()
+            self.decogarden2 = Decogarden2()
 
         except:
             raise
@@ -773,3 +777,7 @@ class WurzelBot(object):
         self.snailracing.check_race_feeding()
     def check_ivyhouse(self, slot):
         self.ivyhouse.check_breed(slot)
+    #Decogarden, Erholungsgarten
+    def collect_decogardens(self):
+        self.decogarden1.collect()
+        self.decogarden2.collect()

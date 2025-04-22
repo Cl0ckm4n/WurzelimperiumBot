@@ -87,6 +87,7 @@ def main():
         wurzelBot.check_park()
         wurzelBot.cut_and_renew_bonsais()
         wurzelBot.check_snailracing()
+        wurzelBot.collect_decogardens()
 
     finally:
         # Close connection
