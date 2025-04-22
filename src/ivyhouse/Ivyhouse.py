@@ -97,7 +97,7 @@ class Ivyhouse():
                 print('➡ src/ivyhouse/Ivyhouse.py:72 item_name:', item_name)
                 return item_name
 
-    def __check_deco(self, deco_name=DECO.get("Gärtner")):
+    def __check_deco(self, deco_name=DECO.get("Lampignon 2")):
         deco_slots: dict = self.__breed.get("deco") #dict-dict
         print('➡ src/ivyhouse/Ivyhouse.py:97 deco_slots:', deco_slots)
         if not deco_slots:
