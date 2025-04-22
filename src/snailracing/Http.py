@@ -37,6 +37,15 @@ class Http(object):
         except:
             raise
 
+    def start_race(self, setup):
+        address = f'ajax/ajax.php?do=snailracing_start_race&setup={{{setup}}}&token={self.__http.token()}'
+        try:
+            response, content = self.__http.sendRequest(address)
+            self.__http.checkIfHTTPStateIsOK(response)
+            return self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
     def feed_snail(self, pid, amount): #red bar pid = 473, 
         """pid: snail food"""
         address = f'ajax/ajax.php?do=snailracing_feed_snail&pid={pid}&amount={amount}&token={self.__http.token()}'
