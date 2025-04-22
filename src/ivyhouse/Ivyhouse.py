@@ -27,7 +27,8 @@ class Ivyhouse():
         if "rewards" in jContent['data']:
             print("###REWARDS")
             print(jContent['data']['rewards'])
-            print(self.__breed.get("daily", "no daily found"))
+            if self.__breed:
+                print(self.__breed.get("daily", "no daily found"))
 
     def __remove_pest(self):
         if self.__breed and self.__breed["pest"]:
