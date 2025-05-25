@@ -158,15 +158,13 @@ class Ivyhouse():
         return deco_slots
 
     def check_breed(self, slot):
-        self.__breed.get("remain", "xxx")
-        print('➡ src/ivyhouse/Ivyhouse.py:32 self.__breed.get("remain1":', self.__breed.get("remain"))
-
-        if self.__breed.get("remain", 0) < 0:
-            print("### FINISHED")
-            content = self.__http.finish_breed()
-            rewards = content["data"]["rewards"]
-            print('➡ src/ivyhouse/Ivyhouse.py:99 rewards:', rewards)
-            self.__update(content)
+        if self.__breed: #breed=0 if breed finished
+            if self.__breed.get("remain", 0) < 0: 
+                print("### FINISHED")
+                content = self.__http.finish_breed()
+                rewards = content["data"]["rewards"]
+                print('➡ src/ivyhouse/Ivyhouse.py:99 rewards:', rewards)
+                self.__update(content)
 
         self.__breed.get("remain", "xxx")
         print('➡ src/ivyhouse/Ivyhouse.py:32 self.__breed.get("remain2":', self.__breed.get("remain"))
