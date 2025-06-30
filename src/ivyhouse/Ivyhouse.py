@@ -57,7 +57,14 @@ class Ivyhouse():
             print("remove Weather")
             content = self.__http.remove_weather()
             self.__update(content)
+            content = self.__set_weather(weather_name)
+            self.__update(content)
 
+        if not weather_item: #kein Item vorher platziert (z.B. Zuchtstart)
+            content = self.__set_weather(weather_name)
+            self.__update(content)
+
+    def __set_weather(self, weather_name):
             item_id = self.__search_item_id(weather_name)
             if not item_id:
                 print("BUY WEATHER")
