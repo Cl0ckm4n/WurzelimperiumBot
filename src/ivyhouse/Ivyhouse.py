@@ -57,14 +57,13 @@ class Ivyhouse():
             print("remove Weather")
             content = self.__http.remove_weather()
             self.__update(content)
-            content = self.__set_weather(weather_name)
-            self.__update(content)
+            self.__set_weather(weather_name)
 
         if not weather_item: #kein Item vorher platziert (z.B. Zuchtstart)
             content = self.__set_weather(weather_name)
             self.__update(content)
 
-    def __set_weather(self, weather_name):
+    def __set_weather(self, weather_name) -> None:
             item_id = self.__search_item_id(weather_name)
             if not item_id:
                 print("BUY WEATHER")
@@ -104,7 +103,7 @@ class Ivyhouse():
                 print('➡ src/ivyhouse/Ivyhouse.py:72 item_name:', item_name)
                 return item_name
 
-    def __check_deco(self, deco_name=DECO.get("Lampignon 4")):
+    def __check_deco(self, deco_name=DECO.get("Fenster")):
         deco_slots: dict = self.__breed.get("deco") #dict-dict
         print('➡ src/ivyhouse/Ivyhouse.py:97 deco_slots:', deco_slots)
         if not deco_slots:
