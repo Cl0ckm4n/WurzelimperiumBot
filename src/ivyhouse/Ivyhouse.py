@@ -172,8 +172,6 @@ class Ivyhouse():
                 print('➡ src/ivyhouse/Ivyhouse.py:99 rewards:', rewards)
                 self.__update(content)
 
-        self.__breed.get("remain", "xxx")
-        print('➡ src/ivyhouse/Ivyhouse.py:32 self.__breed.get("remain2":', self.__breed.get("remain"))
         if self.__breed == 0:
             print("### START")
             if slot:
@@ -182,11 +180,6 @@ class Ivyhouse():
             else:
                 print("No ivy type specified!")
                 return
-
-        self.__breed.get("remain", 0)
-        print('➡ src/ivyhouse/Ivyhouse.py:32 self.__breed.get("remain":', self.__breed.get("remain"))
-        
-        
         #remain > 0
         self.__remove_pest()
         self.__check_weather()
