@@ -80,9 +80,10 @@ def main():
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
         print(i18n.t('wimpb.process_wimps'))
-        wurzelBot.sell_to_wimps(buy_from_shop=True)
+        wurzelBot.sell_to_wimps(buy_from_shop=True, method="all")
 
-        wurzelBot.check_herb_garden()
+        if wurzelBot.note.get_herbgarden_active():
+            wurzelBot.check_herb_garden()
         wurzelBot.check_greenhouse()
         wurzelBot.check_park()
         wurzelBot.cut_and_renew_bonsais()

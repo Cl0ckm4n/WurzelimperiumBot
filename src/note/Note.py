@@ -16,6 +16,7 @@ class NoteSettings(Enum):
     WATERGARDEN_PLANT_EDGE = "watergardenPlantEdge:"
     BEE_HIVES = "beeHives:"
     IVY_TYPE = "ivy:"
+    HERBGARDEN_ACTIVE = "herbgarden:"
 
 class Note():
     """This class handles reading from the user notes"""
@@ -32,6 +33,7 @@ class Note():
         self._watergarden_plant_edge = None
         self._bee_hives = None
         self._ivy = None
+        self._herbgarden_active = False
 
     def get_note(self):
         return self.__http.get_note()
@@ -56,6 +58,9 @@ class Note():
     
     def get_ivy(self) -> str:
         return self._ivy
+    
+    def get_herbgarden_active(self) -> bool:
+        return self._herbgarden_active
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -130,6 +135,11 @@ class Note():
                     if setting == NoteSettings.IVY_TYPE:
                         self._ivy = line
                         print('➡ src/note/Note.py:128 self._ivy:', self._ivy)
+                    if setting == NoteSettings.HERBGARDEN_ACTIVE:
+                        print(f"\n\n\n {line}")
+                        print(type(line))
+                        if line == "1":
+                            self._herbgarden_active = True
                     else:
                         plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:
