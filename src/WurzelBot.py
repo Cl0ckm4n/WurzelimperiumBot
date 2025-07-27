@@ -774,13 +774,16 @@ class WurzelBot(object):
     #     self.fair.play_wetgnome()
     # Snailracing
     def check_snailracing(self):
+        self.snailracing.collect_bar_production()
+        self.snailracing.start_bar_production()
         self.snailracing.check_race_finish()
-
         self.snailracing.check_race_start()
-        
         self.snailracing.check_race_feeding()
+
+    # Ivyhouse
     def check_ivyhouse(self, slot):
         self.ivyhouse.check_breed(slot)
+
     #Decogarden, Erholungsgarten
     def collect_decogardens(self):
         self.decogarden1.collect()

@@ -117,50 +117,65 @@ class Snailracing:
         else:
             self.__data = None #TEMP: json
         print(self.__data)
-        self.__productions_slots_available = {}
+        self.__productions_slots_unlocked = []
         self.__race_energy = 0 #TEMP int(self.__data["data"]["data"]["race"]["energy"])
         if not json:
             self.update()
 
     def update(self):
         self.__set_data(self.__http.get_snailracing_info())
-        # self.__productions_slots = self.__set_production_slots()
-        # print('➡ src/snailracing/Snailracing.py:120 self.__productions_slots:', self.__productions_slots)
-        # self.__get_production_slots_available()
-        # print('➡ src/snailracing/Snailracing.py:122 self.__productions_slots_available:', self.__productions_slots_available)
-
-    #TODO: Riegle abholen und produzieren
-    #TODO: Rennen starten, füttern, beenden, trainieren
-
-    def start_bar_production(self):
-        for slot in self.__productions_slots_available():
-            print(slot)
-
-    def collect_bar_production(self):
-        for slot in self.__productions_slots():
-            if slot.get("finishdate", None) == 0:
-                print(f"slot {slot} finished")
-                # self.__http.harvest_bar_production(slot = slot.get("slot"))
+        
 
     def __set_data(self, j_content):
         self.__data = j_content['data']
-        # print('➡ src/snailracing/Snailracing.py:139 self.__data:', self.__data)
         self.__race_energy = int(self.__data["data"]["race"]["energy"])
         print('➡ src/snailracing/Snailracing.py:141 self.__race_energy:', self.__race_energy)
         self.__race_remain = int(self.__data["data"]["race"].get("remain", 999999999))
         print('➡ src/snailracing/Snailracing.py:149 self.__race_remain:', self.__race_remain)
-        print('➡ src/snailracing/Snailracing.py:143 self.__race_remain:', self.__race_remain)
 
-    def __get_production_slots_available(self): #TODO: slot 1,2,3,4
-        slots = self.__data["data"]["productions"]
-        print('➡ src/snailracing/Snailracing.py:145 slots:', slots)
-        for slot in slots.items():
-            print('➡ src/snailracing/Snailracing.py:147 slot:', slot)
-            if not slot.get("block", 1) == 1:
-                self.__productions_slots_available.update(slot)
+        # BARS
+        self.__productions_slots_unlocked = self.__get_production_slots_unlocked()
 
-    # def __set_production_slots(self):
-    #     self.__productions_slots = self.__data["data"]["productionslots"]
+    def __get_production_slots_unlocked(self) -> list:
+        productions_slots_unlocked = []
+        slots = self.__data["data"]["productionslots"]
+        productions_slots_unlocked.append("1")
+        del slots["1"]
+        for slot, data in slots.items():
+            if not data.get("block", 0) == 1:
+                productions_slots_unlocked.append(slot)
+
+        return productions_slots_unlocked
+
+    def __get_production_slots_free(self) -> list:
+        slots_occupied = []
+        productions = self.__data.get("data", 0).get("productions", 0)
+        print('➡ src/snailracing/Snailracing.py:145 productions:', productions)
+        if productions:
+            for slot, data in productions.items():
+                slots_occupied.append(slot)
+            print('➡ src/snailracing/Snailracing.py:209 slots_occupied:', slots_occupied)
+            slots_free = [x for x in self.__productions_slots_unlocked if x not in slots_occupied]
+            print('➡ src/snailracing/Snailracing.py:209 slots_free:', slots_free)
+            
+        return slots_free
+    def start_bar_production(self, bar_pid=473) -> None:
+        slots_free = self.__get_production_slots_free()
+        print('➡ src/snailracing/Snailracing.py:205 slots_free:', slots_free)
+        for slot in slots_free:
+            data = self.__http.start_bar_production(slot, bar_pid)
+            self.__set_data(data)
+
+    def collect_bar_production(self) -> None:
+        productions = self.__data.get("data", 0).get("productions", 0)
+        if not productions: return
+
+        for slot, data in productions.items():
+            if data.get("remain", None) <= 0:
+                print('➡ src/snailracing/Snailracing.py:216 data.get("remain":', data.get("remain"))
+                print(f"\n\nslot {slot} finished") #TODO: test
+                data = self.__http.harvest_bar_production(slot)
+                self.__set_data(data)
 
     def calculate_track_segments(self, json) -> list: #WORKS
         track_data = json["data"]["race"]["track"]
