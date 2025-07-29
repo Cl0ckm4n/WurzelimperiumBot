@@ -156,8 +156,8 @@ class Snailracing:
             for slot, data in productions.items():
                 slots_occupied.append(slot)
             print('➡ src/snailracing/Snailracing.py:209 slots_occupied:', slots_occupied)
-            slots_free = [x for x in self.__productions_slots_unlocked if x not in slots_occupied]
-            print('➡ src/snailracing/Snailracing.py:209 slots_free:', slots_free)
+        slots_free = [x for x in self.__productions_slots_unlocked if x not in slots_occupied]
+        print('➡ src/snailracing/Snailracing.py:209 slots_free:', slots_free)
             
         return slots_free
     def start_bar_production(self, bar_pid=473) -> None:
