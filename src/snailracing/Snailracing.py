@@ -149,6 +149,7 @@ class Snailracing:
 
     def __get_production_slots_free(self) -> list:
         slots_occupied = []
+        slots_free = []
         productions = self.__data.get("data", 0).get("productions", 0)
         print('➡ src/snailracing/Snailracing.py:145 productions:', productions)
         if productions:
