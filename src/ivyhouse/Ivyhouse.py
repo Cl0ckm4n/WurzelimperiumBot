@@ -47,21 +47,21 @@ class Ivyhouse():
         weather_remain = self.__breed["weather"].get("remain", -1)
         print('➡ src/ivyhouse/Ivyhouse.py:38 weather_remain:', weather_remain)
         weather_item = self.__breed["weather"].get("item", 0)
+        print('➡ src/ivyhouse/Ivyhouse.py:51 weather_item:', type(weather_item))
         print('➡ src/ivyhouse/Ivyhouse.py:40 weather_item:', weather_item)
         weather_item_name = self.__search_item_name(weather_item)
         print('➡ src/ivyhouse/Ivyhouse.py:46 weather_item_name:', weather_item_name)
         weather_item_remain = self.__breed["weather"].get("itemremain", -1)
         print('➡ src/ivyhouse/Ivyhouse.py:42 weather_item_remain:', weather_item_remain)
         
-        if weather_item and not weather_name == weather_item_name or weather_item_remain < 0: #anderes Wetter
+        if not weather_item: #kein Item vorher platziert (z.B. Zuchtstart)
+            self.__set_weather(weather_name)
+
+        if weather_item and (not weather_name == weather_item_name or weather_item_remain < 0): #anderes Wetter OR abgelaufen
             print("remove Weather")
             content = self.__http.remove_weather()
             self.__update(content)
             self.__set_weather(weather_name)
-
-        if not weather_item: #kein Item vorher platziert (z.B. Zuchtstart)
-            content = self.__set_weather(weather_name)
-            self.__update(content)
 
     def __set_weather(self, weather_name) -> None:
             item_id = self.__search_item_id(weather_name)
