@@ -63,9 +63,7 @@ wurzelBot.buy_from_shop(2, 1) #buy plant with id and amount #BG-Купете р�
 wurzelBot.stock.update()
 print(f'neuer Lagerstand: {wurzelBot.stock.get_stock_by_product_id("2")}')
 
-wurzelBot.send_bees(1) # Send bees for 2 hours
-wurzelBot.cut_and_renew_bonsais() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde #BG-Опитва се да отреже клоните - други идеи: проверка дали е изпратено
-wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die fehlenden Produkte nach - weitere ideen: wt check #BG-Опитва се да реши Infinity Quest и купува липсващите продукти - други идеи: проверка на WT
+wurzelBot.check_megafruit(mushroom=Mushroom.Riesenträuchling, buy_from_shop=True)
 
 #Deinitialisierung des Bots #BG-Деинициализация на бота
 wurzelBot.logout()

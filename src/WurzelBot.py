@@ -20,6 +20,7 @@ from src.honey.Honey import Honey
 from src.ivyhouse.Ivyhouse import Ivyhouse
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
+from src.megafruit.Megafruit import Megafruit, Mushroom, Care_OID
 # from src.minigames.fair.Fair import Fair
 from src.Messenger import Messenger
 from src.note.Note import Note
@@ -68,6 +69,7 @@ class WurzelBot(object):
         self.snailracing = None
         self.ivyhouse = None
         # self.fair = None
+        self.megafruit = None
 
 
     def __init_gardens(self):
@@ -104,6 +106,9 @@ class WurzelBot(object):
 
             if self.feature.is_ivyhouse_available() is True:
                 self.ivyhouse = Ivyhouse()
+
+            #TODO: if self.feature.is_megafruit_available() is True:
+            self.megafruit= Megafruit()
 
             # self.fair = Fair() #TODO: check availability
 
@@ -788,3 +793,21 @@ class WurzelBot(object):
     def collect_decogardens(self):
         self.decogarden1.collect()
         self.decogarden2.collect()
+
+    #Megafruit
+    def check_megafruit(self, mushroom: Mushroom, buy_from_shop: bool = False) -> bool:
+        stock_list = self.stock.get_ordered_stock_list(filter_zero=False)
+        id = mushroom.value
+        min_stock = 1800 #TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
+        if stock_list.get(str(id), 0) < min_stock:
+            if not buy_from_shop:
+                return False
+
+            if self.buy_from_shop(int(id), min_stock) == -1:
+                return False
+
+        self.megafruit.megafruit_start(mushroom)
+        self.megafruit.megafruit_care(oid=Care_OID.Water3)
+        self.megafruit.megafruit_care(oid=Care_OID.Light3)
+        self.megafruit.megafruit_care(oid=Care_OID.Fertilize3)
+        self.megafruit.megafruit_finish()
