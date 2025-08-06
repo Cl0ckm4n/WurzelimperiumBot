@@ -5,6 +5,7 @@ import argparse
 import time
 import i18n
 import src.Logger as logger
+from src.megafruit.Megafruit import Mushroom
 from src.WurzelBot import WurzelBot
 
 def main():
@@ -86,6 +87,7 @@ def main():
             wurzelBot.check_herb_garden()
         wurzelBot.check_greenhouse()
         wurzelBot.check_park()
+        wurzelBot.check_megafruit(mushroom=Mushroom.Riesenträuchling, buy_from_shop=True)
         wurzelBot.cut_and_renew_bonsais()
         wurzelBot.check_snailracing()
         wurzelBot.collect_decogardens()
