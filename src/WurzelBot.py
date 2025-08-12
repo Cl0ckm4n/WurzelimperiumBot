@@ -805,9 +805,9 @@ class WurzelBot(object):
 
             if self.buy_from_shop(int(id), min_stock) == -1:
                 return False
-
+        self.megafruit.megafruit_finish()
         self.megafruit.megafruit_start(mushroom)
         self.megafruit.megafruit_care(oid=Care_OID.Water3)
         self.megafruit.megafruit_care(oid=Care_OID.Light3)
         self.megafruit.megafruit_care(oid=Care_OID.Fertilize3)
-        self.megafruit.megafruit_finish()
+        

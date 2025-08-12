@@ -42,7 +42,7 @@ class Http(object):
 
     def megafruit_finish(self):
         pass
-        address = f'ajax/ajax.php?do=megafruit_finish&token={self.__http.token()}'
+        address = f'ajax/ajax.php?do=megafruit_harvest&token={self.__http.token()}'
         try:
             response, content = self.__http.sendRequest(address)
             self.__http.checkIfHTTPStateIsOK(response)

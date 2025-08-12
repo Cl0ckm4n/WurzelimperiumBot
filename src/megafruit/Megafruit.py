@@ -198,6 +198,8 @@ class Megafruit:
 
     def __set_data(self, j_content):
         self.__data = j_content.get("data", None)
+        if self.__data.get("get_reward", 0):
+            self.__log.info(f"Earned {self.__data.get('get_reward', 'n/a')} | Mushroom size: {self.__data.get('size', 'n/a')}")
 
     def megafruit_start(self, plant: Mushroom = 0):
         if plant and not self.__data.get("entry", 0):
@@ -227,6 +229,9 @@ class Megafruit:
             self.care(Care.Fertilize, oid)
 
     def care(self, care_name: Care, oid):
+        if self.__data.get("remain", 0) < 0:
+            return
+        
         data = self.__data.get("entry", 0).get("data", 0)
         print('➡ src/megafruit/Megafruit.py:214 data:', data)
         print('➡ src/megafruit/Megafruit.py:214 data:', type(data))
