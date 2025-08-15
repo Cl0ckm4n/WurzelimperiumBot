@@ -85,7 +85,7 @@ def main():
 
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()
-        wurzelBot.check_greenhouse()
+        # wurzelBot.check_greenhouse()
         # wurzelBot.check_park()
         # wurzelBot.check_megafruit(mushroom=Mushroom.Riesenträuchling, buy_from_shop=True)
         # wurzelBot.cut_and_renew_bonsais()
