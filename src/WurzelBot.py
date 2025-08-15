@@ -107,13 +107,14 @@ class WurzelBot(object):
             if self.feature.is_ivyhouse_available() is True:
                 self.ivyhouse = Ivyhouse()
 
-            #TODO: if self.feature.is_megafruit_available() is True:
-            self.megafruit= Megafruit()
+            if self.feature.is_megafruit_available() is True:
+                self.megafruit= Megafruit()
 
             # self.fair = Fair() #TODO: check availability
 
             self.decogarden1 = Decogarden1()
-            self.decogarden2 = Decogarden2()
+            if self.feature.is_decogarden2_available() is True:
+                self.decogarden2 = Decogarden2()
 
         except:
             raise

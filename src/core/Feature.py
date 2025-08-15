@@ -57,3 +57,13 @@ class Feature():
         if self.__user.get_level() < 24:
             return False
         return self.__http.is_ivyhouse_available()
+    
+    def is_megafruit_available(self) -> bool:
+        if self.__user.get_level() < 17:
+            return False
+        return self.__http.is_megafruit_available()
+    
+    def is_decogarden2_available(self) -> bool:
+        if not self.__user.is_premium_active():
+            return False
+        return self.__http.is_decogarden2_available()
