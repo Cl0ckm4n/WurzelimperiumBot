@@ -164,6 +164,7 @@ class Snailracing:
         slots_free = self.__get_production_slots_free()
         print('➡ src/snailracing/Snailracing.py:205 slots_free:', slots_free)
         for slot in slots_free:
+            #TODO: check products
             data = self.__http.start_bar_production(slot, bar_pid)
             self.__set_data(data)
 
