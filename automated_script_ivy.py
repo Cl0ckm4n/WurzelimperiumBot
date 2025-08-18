@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import time
 import i18n
-import src.Logger as logger
+from src.core.Config import Config
+from src.logger.Logger import Logger
 from src.WurzelBot import WurzelBot
 
 def main():
@@ -22,9 +22,10 @@ def main():
     i18n.set('fallback', 'en')
 
     if args.log:
-        logger.logger()
+        Config().log_to_stdout = True
 
     # Init connection
+    # BG- Създаване на връзка
     wurzelBot = WurzelBot()
     succ = wurzelBot.login(args.server, args.user, args.password, args.lang, args.portalacc)
     if not succ:

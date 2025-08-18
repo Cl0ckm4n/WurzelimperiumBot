@@ -4,7 +4,8 @@
 import argparse
 import time
 import i18n
-import src.Logger as logger
+from src.core.Config import Config
+from src.logger.Logger import Logger
 from src.megafruit.Megafruit import Mushroom
 from src.WurzelBot import WurzelBot
 
@@ -23,7 +24,7 @@ def main():
     i18n.set('fallback', 'en')
 
     if args.log:
-        logger.logger()
+        Config().log_to_stdout = True
 
     # Init connection
     # BG- Създаване на връзка
