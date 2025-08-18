@@ -110,8 +110,7 @@ class HerbGarden(Garden):
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
 
-                if len(to_plant) == self._PLANT_PER_REQUEST or len(to_plant) + planted == amount \
-                or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == list(self._VALID_FIELDS.keys())[-1] and len(to_plant) > 0):
                     self.__http.grow(to_plant, herbID, self._id)
                     planted += len(to_plant)
                     to_plant = {}

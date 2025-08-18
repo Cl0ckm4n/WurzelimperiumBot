@@ -22,8 +22,6 @@ class Note:
 
     def __init__(self):
         self.__http = Http()
-        self.__log = logging.getLogger(f'bot.{self.__class__.__name__}')
-        self.__log.setLevel(logging.DEBUG)
         self.__product_data = ProductData()
         self._garden_plant_1 = None
         self._garden_plant_2 = None

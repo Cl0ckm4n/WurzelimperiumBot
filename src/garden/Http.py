@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import Counter
 from src.core.HTTPCommunication import HTTPConnection
 from src.logger.Logger import Logger
 from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
@@ -59,22 +60,42 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             if param == "empty":
                 return self.find_empty_fields_in_json(jContent)
-            elif param == "grown":
-                return self.__find_grown_fields(jContent)
+            elif param == "growing":
+                return self.__find_growing_fields(jContent)
             return jContent
         except Exception:
             Logger().print_exception('Failed to get empty fields in garden')
             return None
 
-    def __find_grown_fields(self, jContent):
+    def __find_growing_fields(self, jContent):
         """Sucht im JSON Content nach Felder die bepflanzt sind und gibt diese zurück."""
-        grown_fields = {}
+        growing_fields = {}
         for index in jContent['grow']:
             field = index[0]
             plant_id = index[1]
-            grown_fields.update({field: plant_id})
+            growing_fields.update({field: plant_id})
 
-        return grown_fields
+        return growing_fields
+    
+    def _get_grown_plants(self, j_content):
+        """Returns list of grown plants from JSON content"""
+        plants_in_garden = []
+        for field, attributes in j_content['garden'].items():
+            if not attributes[1] == 1 and attributes[2] == 1 and attributes[5] == 1: # calc garden (only index 1,1) - growing plants && eintrag 6 muss == 1 (d.h. Pflanze; 4 = Deko)
+                print('➡ src/core/HTTPCommunication.py:339 attributes1:', attributes[1])
+                print('➡ src/core/HTTPCommunication.py:339 attributes2:', attributes[2])
+                print('➡ src/core/HTTPCommunication.py:339 attributes5:', attributes[5])
+                continue
+            plants_in_garden.append(str(attributes[0]))
+        print('➡ src/core/HTTPCommunication.py:339 plants_in_garden:', plants_in_garden)
+
+        growing_plants = self.__find_growing_plants_in_json(j_content)
+        grown_plants = Counter(plants_in_garden) - Counter(growing_plants)
+        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(plants_in_garden))
+        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(growing_plants))
+        print('➡ src/core/HTTPCommunication.py:341 result:', grown_plants)
+        
+        return grown_plants
 
     def get_weed_fields(self, gardenID):
         """Gibt alle Unkraut-Felder eines Gartens zurück."""
@@ -142,6 +163,34 @@ class Http:
                 if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
+                if 'fair' in jContent: #Jahrmarkt
+                    ticket_snippets = jContent['fair']
+                    msg = msg + f"\n{ticket_snippets} Ticketschnipsel"
+                if 'collectevent' in jContent: #Schneeballschlacht
+                    eventitems = jContent['collectevent']
+                    msg = msg + f"\n{eventitems} snowballs" #TODO: check which event is active
+                if 'rainbowevent' in jContent: #St. Patricks Day
+                    eventitems = jContent['rainbowevent']
+                    msg = msg + f"\n{eventitems} rainbow color" #TODO: check which event is active
+                if 'moledig' in jContent: #Maulwurfbuddeln
+                    eventitems = jContent['moledig']
+                    msg = msg + f"\n{eventitems} energy" #TODO: check which event is active
+                if 'tinkergame' in jContent: #Halloween Kostüm-Spaß
+                    tinker_items = jContent['tinkergame']
+                    for item, count in tinker_items.items():
+                        if item == "1":
+                            msg = msg + f"\n{count} Schnur"
+                        if item == "2":
+                            msg = msg + f"\n{count} Stoff"
+                        if item == "3":
+                            msg = msg + f"\n{count} Pappe"
+                        if item == "4":
+                            msg = msg + f"\n{count} Schaumstoff"
+                        if item == "5":
+                            msg = msg + f"\n{count} Farbe"
+                        if item == "6":
+                            msg = msg + f"\n{count} Klebeband"
+                print(msg)
                 Logger().print(msg)
             return True
         except Exception:

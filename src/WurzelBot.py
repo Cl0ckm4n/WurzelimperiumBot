@@ -101,7 +101,20 @@ class WurzelBot:
             if Feature().is_megafruit_available():
                 self.megafruit = Megafruit()
 
-            #TODO: Biogas, Snailracing, Ivyhouse, Decogarden1&2
+            if Feature().is_biogas_available():
+                self.biogas = Biogas()
+
+            if Feature().is_snailracing_available():
+                self.snailracing = Snailracing()
+
+            if Feature().is_ivyhouse_available():
+                self.ivyhouse = Ivyhouse()
+
+
+            if Feature().is_decogarden2_available():
+                self.decogarden2 = Decogarden2()
+
+            self.decogarden1 = Decogarden1()
 
             return True
 

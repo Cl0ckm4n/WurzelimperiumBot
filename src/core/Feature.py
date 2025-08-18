@@ -81,7 +81,7 @@ class Feature:
             return False
     
     def is_ivyhouse_available(self) -> bool:
-        if User().get_level() < 24:
+        if User().get_level() < 23:
             return False
         if 'ivyhouse' in self.__city_data['data']['location']:
             return self.__city_data['data']['location']['ivyhouse']['bought'] == 1
