@@ -11,10 +11,9 @@ class Http(object):
         """Selects ivyhouse returns JSON content"""
         address = f'ajax/ajax.php?do=ivyhouse_init&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -23,10 +22,9 @@ class Http(object):
         """Start ivy and returns JSON content"""
         address = f'ajax/ajax.php?do=ivyhouse_start_breed&slot={slot}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -34,10 +32,9 @@ class Http(object):
         """Finishes ivy and returns JSON content"""
         address = f'ajax/ajax.php?do=ivyhouse_finish_breed&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -46,10 +43,9 @@ class Http(object):
         #pos = 1, weitere?
         address = f'ajax/ajax.php?do=ivyhouse_remove_pest&name={name}&pos={pos}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -57,10 +53,9 @@ class Http(object):
         #slot = 1,2,3,4
         address = f'ajax/ajax.php?do=ivyhouse_set_deco&slot={slot}&id={id}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -68,30 +63,27 @@ class Http(object):
         #slot = 1,2,3,4
         address = f'ajax/ajax.php?do=ivyhouse_remove_deco&slot={slot}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
     def set_weather(self, id):
         address = f'ajax/ajax.php?do=ivyhouse_set_weather_item&id={id}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
     def remove_weather(self):
         address = f'ajax/ajax.php?do=ivyhouse_remove_weather_item&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -101,9 +93,8 @@ class Http(object):
         #amount = 2
         address = f'ajax/ajax.php?do=ivyhouse_buy_shop_item&name={name}&slot={slot}&amount={amount}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
