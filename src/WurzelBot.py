@@ -17,6 +17,7 @@ from src.core.User import User
 from src.garden.aqua.AquaGarden import AquaGarden
 from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.garden.Garden import Garden
+from src.garden.Garden import Http as Garden_Http
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
@@ -389,22 +390,22 @@ class WurzelBot:
         """Harvest all gardens"""
         garden: Garden
         for garden in self.gardens:
-                # check rubbish for biogas
-                if self.feature.is_biogas_available():
-                    j_content = self.__HTTPConn._changeGarden(garden.getID())
-                    grown_plants = self.__HTTPConn._get_grown_plants(j_content)
-                    rubbish_to_collect = self.biogas.calculate_rubbish(grown_plants)
-                    print('➡ src/WurzelBot.py:420 rubbish_to_collect:', rubbish_to_collect)
+            # check rubbish for biogas
+            if self.biogas:
+                j_content = Garden_Http().change_garden(garden.getID())
+                grown_plants = Garden_Http()._get_grown_plants(j_content)
+                rubbish_to_collect = self.biogas.calculate_rubbish(grown_plants)
+                print('➡ src/WurzelBot.py:420 rubbish_to_collect:', rubbish_to_collect)
 
-                    if not self.biogas.check_rubbish_capacity(rubbish_to_collect):
-                        counter = 0
-                        print('➡ src/WurzelBot.py:425 counter:', counter)
-                        while not self.biogas.check_rubbish_capacity(rubbish_to_collect) and counter < 20:
-                            self.biogas.sell_to_wimp(slot=1)
-                            counter += 1
-                            print('➡ src/WurzelBot.py:423 counter:', counter)
+                if not self.biogas.check_rubbish_capacity(rubbish_to_collect):
+                    counter = 0
+                    print('➡ src/WurzelBot.py:425 counter:', counter)
+                    while not self.biogas.check_rubbish_capacity(rubbish_to_collect) and counter < 20:
+                        self.biogas.sell_to_wimp(slot=1)
+                        counter += 1
+                        print('➡ src/WurzelBot.py:423 counter:', counter)
 
-                #if capacity is available: harvest garden
+            #if capacity is available: harvest garden
             if not garden.harvest():
                 return False
 
