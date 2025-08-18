@@ -29,9 +29,9 @@ class CityPark:
             self.__set_park_data(content)
         return True
 
-    def __get_all_deco(self):
+    def __get_all_deco(self, park_id=1):
         """get all items"""
-        items = self.__data["data"]["park"][self.__parkID]["items"]
+        items = self.__data["data"]["park"][str(park_id)]["items"]
         all_items = {}
         for key, value in items.items():
             if 'parent' in value: 
@@ -42,7 +42,7 @@ class CityPark:
 
     def __get_expired_deco(self, park_id=1):
         """get all expired items"""
-        items = self.__data["data"]["park"][self.__parkID]["items"]
+        items = self.__data["data"]["park"][str(park_id)]["items"]
         renewable_items = {}
         for key, value in items.items():
             if 'parent' in value: 
