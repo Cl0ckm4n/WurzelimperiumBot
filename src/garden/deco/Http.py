@@ -11,18 +11,17 @@ class Http(object):
     def init_decogarden_1(self):        
         address = f'ajax/decogardenajax.php?do=getGarden'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
     def collect_decogarden_1(self):
         address = f'ajax/decogardenajax.php?do=premiumCollector'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
             jContent = json.loads(content)
             return jContent
         except:
@@ -31,19 +30,17 @@ class Http(object):
     def init_decogarden_2(self):
         address = f'ajax/ajax.php?do=decogarden2_init&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
     def collect_decogarden_2(self):
         address = f'ajax/ajax.php?do=decogarden2_collect_all_items&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
-            return jContent
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
