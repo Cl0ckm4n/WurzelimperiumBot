@@ -727,6 +727,12 @@ class HTTPConnection(object):
                 if 'collectevent' in jContent: #Schneeballschlacht
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} snowballs" #TODO: check which event is active
+                if 'rainbowevent' in jContent: #St. Patricks Day
+                    eventitems = jContent['rainbowevent']
+                    msg = msg + f"\n{eventitems} rainbow color" #TODO: check which event is active
+                if 'moledig' in jContent: #Maulwurfbuddeln
+                    eventitems = jContent['moledig']
+                    msg = msg + f"\n{eventitems} energy" #TODO: check which event is active
                 if 'tinkergame' in jContent: #Halloween Kostüm-Spaß
                     tinker_items = jContent['tinkergame']
                     for item, count in tinker_items.items():
