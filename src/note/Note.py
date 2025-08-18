@@ -130,6 +130,7 @@ class Note:
                 line = line.replace(setting.value, '').strip()
                 if line.strip() == '':
                     continue
+                
                 try:
                     if setting == NoteSettings.IVY_TYPE:
                         self._ivy = line
@@ -142,9 +143,8 @@ class Note:
                     else:
                         plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:
-                    self.__log.error(f"Could not find plant: {line}")
+                    Logger().error(f"Could not find plant: {line}")
                 else:
-
                     if setting == NoteSettings.GARDEN_PLANT_1:
                         self._garden_plant_1 = plant_name
                     if setting == NoteSettings.GARDEN_PLANT_2:
