@@ -1,274 +1,158 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
-from enum import Enum
-
+from src.logger.Logger import Logger
 from src.megafruit.Http import Http
-
-
-class Mushroom(Enum):
-    Champignon = 69
-    Steinpilz = 268
-    Pfifferlig = 269
-    Speisemorchel = 270
-    Kräuter_Seitling = 271
-    Riesenträuchling = 272
-    Goldener_Flauschling = 999
-
-class Care(Enum):
-    Water = "water"
-    Light = "light"
-    Fertilize = "fertilize"
-
-class Care_OID(Enum):
-    """
-    {
-	"objects": {
-		"water": [
-			{
-				"oid": 1,
-				"level": 1,
-				"money": 200,
-				"points": 83,
-				"duration": 28800,
-				"unlock": 0
-			},
-			{
-				"oid": 2,
-				"level": 5,
-				"coins": 1,
-				"points": 1310,
-				"duration": 201600,
-				"unlock": 100
-			},
-			{
-				"oid": 3,
-				"level": 9,
-				"money": 500,
-				"points": 187,
-				"duration": 28800,
-				"unlock": 160
-			},
-			{
-				"oid": 4,
-				"level": 13,
-				"coins": 2,
-				"points": 3494,
-				"duration": 201600,
-				"unlock": 250
-			},
-			{
-				"oid": 5,
-				"level": 17,
-				"fruits": 30,
-				"points": 416,
-				"duration": 28800,
-				"unlock": 400
-			},
-			{
-				"oid": 16,
-				"level": 21,
-				"coins": 3,
-				"points": 3640,
-				"duration": 201600,
-				"unlock": 1000
-			}
-		],
-		"light": [
-			{
-				"oid": 6,
-				"level": 2,
-				"money": 200,
-				"points": 94,
-				"duration": 28800,
-				"unlock": 20
-			},
-			{
-				"oid": 7,
-				"level": 6,
-				"coins": 1,
-				"points": 1310,
-				"duration": 201600,
-				"unlock": 120
-			},
-			{
-				"oid": 8,
-				"level": 10,
-				"money": 550,
-				"points": 198,
-				"duration": 28800,
-				"unlock": 180
-			},
-			{
-				"oid": 9,
-				"level": 14,
-				"coins": 2,
-				"points": 3494,
-				"duration": 201600,
-				"unlock": 300
-			},
-			{
-				"oid": 10,
-				"level": 18,
-				"fruits": 35,
-				"points": 437,
-				"duration": 28800,
-				"unlock": 450
-			},
-			{
-				"oid": 17,
-				"level": 22,
-				"coins": 3,
-				"points": 3713,
-				"duration": 201600,
-				"unlock": 1200
-			}
-		],
-		"fertilize": [
-			{
-				"oid": 11,
-				"level": 3,
-				"money": 200,
-				"points": 104,
-				"duration": 28800,
-				"unlock": 50
-			},
-			{
-				"oid": 12,
-				"level": 7,
-				"coins": 1,
-				"points": 1310,
-				"duration": 201600,
-				"unlock": 140
-			},
-			{
-				"oid": 13,
-				"level": 11,
-				"money": 600,
-				"points": 208,
-				"duration": 28800,
-				"unlock": 200
-			},
-			{
-				"oid": 14,
-				"level": 15,
-				"coins": 2,
-				"points": 3494,
-				"duration": 201600,
-				"unlock": 350
-			},
-			{
-				"oid": 15,
-				"level": 19,
-				"fruits": 40,
-				"points": 458,
-				"duration": 28800,
-				"unlock": 500
-			},
-			{
-				"oid": 18,
-				"level": 23,
-				"coins": 3,
-				"points": 3786,
-				"duration": 201600,
-				"unlock": 1500
-			}
-		]
-	}
-}
-    """
-    Water3 = 3
-    Light3 = 8
-    Fertilize3 = 13
+from src.megafruit.MegafruitData import Mushroom, Care_OID, Care, is_fertilize_care_item, is_light_care_item, is_water_care_item, get_care_item_price
+from src.core.User import User
 
 class Megafruit:
-    """All important information for the megafruit."""
-
-    def __init__(self): #TEMP ,json
+    def __init__(self):
         self.__http = Http()
-        self.__log = logging.getLogger(f'bot.{self.__class__.__name__}')
-        self.__log.setLevel(logging.INFO)
         self.__data = None
         self.update()
 
-    def update(self):
-        print(self.__http.get_megafruit_info())
-        self.__set_data(self.__http.get_megafruit_info())
+    def update(self) -> bool:
+        data = self.__http.get_info()
+        if data is None:
+            return False
 
-    def __set_data(self, j_content):
-        self.__data = j_content.get("data", None)
-        if self.__data.get("get_reward", 0):
-            self.__log.info(f"Earned {self.__data.get('get_reward', 'n/a')} | Mushroom size: {self.__data.get('size', 'n/a')}")
+        return self.__set_data(data)
 
-    def megafruit_start(self, plant: Mushroom = 0):
-        if plant and not self.__data.get("entry", 0):
-            pid = plant.value
-            print(f"\n\n START Megafruit")
-            print('➡ src/megafruit/Megafruit.py:201 plant.value:', plant.value)
-            print('➡ src/megafruit/Megafruit.py:203 plant.name:', plant.name)
-            data = self.__http.megafruit_start(pid)
-            self.__set_data(data)
+    def __set_data(self, content: dict) -> bool:
+        self.__data = content.get("data", None)
+        return self.__data is not None
 
-    def megafruit_finish(self):
-        if self.__data.get("remain", 0) < 0:
-            data = self.__http.megafruit_finish()
-            self.__set_data(data)
+    # MARK: Base functions
 
-    def megafruit_care(self, oid: Care_OID) -> None:
-        oid=oid.value
+    def start(self, plant: Mushroom = 0) -> bool:
+        if self.is_planted():
+            return True
 
-        if oid in range(1,6) or oid == 16:
-            print("\n\n CARE WATER")
-            self.care(Care.Water, oid)
-        if oid in range(6,11) or oid == 17:
-            print("\n\n CARE LIGHT")
-            self.care(Care.Light, oid)
-        if oid in range(11,16) or oid == 18:
-            print("\n\n CARE FERTILIZE")
-            self.care(Care.Fertilize, oid)
+        if not plant:
+            return False
 
-    def care(self, care_name: Care, oid):
-        if self.__data.get("remain", 0) < 0:
-            return
-        
-        data = self.__data.get("entry", 0).get("data", 0)
-        print('➡ src/megafruit/Megafruit.py:214 data:', data)
-        print('➡ src/megafruit/Megafruit.py:214 data:', type(data))
+        Logger().debug(f'Start megafruit {plant}')
+        pid = plant.value
 
-        if data == "": #Zucht neu, kein Careitem vorhanden
-            print("KEIN CAREITEM 1")
-            data = self.__http.megafruit_care(oid = oid)
-            self.__set_data(data)
-            return
-        
-        if not data.get("used", 0).get(care_name.value, 0): #kein Careitem vorhanden
-            print("KEIN CAREITEM 2")
-            data = self.__http.megafruit_care(oid = oid)
-            self.__set_data(data)
-            return
-        
-        if data.get("used", 0).get(care_name.value, 0).get("remain", 0) < 0: #Careitem abgelaufen
-            print("KEIN CAREITEM 3")
-            data = self.__http.megafruit_care(oid = oid)
-            self.__set_data(data)
-            return
-"""
+        data = self.__http.start(pid)
+        if data is None:
+            return False
+
+        return self.__set_data(data)
+
+    def harvest(self) -> bool:
+        if self.get_remaining_time() >= 0:
+            return True
+
+        data = self.__http.harvest()
+        if data is None:
+            return False
+        return self.__set_data(data)
+
+    def care(self, oid: int) -> bool:
+        if is_water_care_item(oid):
+            return self.__care(Care.WATER, oid)
+
+        if is_light_care_item(oid):
+            return self.__care(Care.LIGHT, oid)
+
+        if is_fertilize_care_item(oid):
+            return self.__care(Care.FERTILIZE, oid)
+
+        Logger().debug(f'Unhandled care OID {oid}')
+        return False
+
+    # MARK: Helpers
+
+    def is_planted(self) -> bool:
+        return bool(self.__data.get('entry', 0))
+
+    def get_remaining_time(self) -> int:
+        return self.__data.get('remain', 0)
+
+    def get_spores(self) -> int:
+        return int(self.__data['count'])
+
+    def get_unlocked_care_items(self) -> list:
+        items = [ Care_OID.WATER_1.value ]
+        if 'data' not in self.__data or 'unlock' not in self.__data['data']:
+            return items
+        for oid in self.__data['data']['unlock']:
+            items.append(int(oid))
+        return items
+
+    def get_best_care_item(self, item_type: str, allowed_care_item_prices: list = ['money', 'coins', 'fruits']) -> int|None:
+        """
+        item_type: 'water', 'light', 'fertilize'
+        """
+        care_items = self.get_unlocked_care_items()
+        best_item = None
+        for item in care_items:
+            # Check if current item is the given type
+            if item_type == 'water' and not is_water_care_item(item):
+                continue
+            if item_type == 'light' and not is_light_care_item(item):
+                continue
+            if item_type == 'fertilize' and not is_fertilize_care_item(item):
+                continue
+
+            # Get price for the item
+            price = get_care_item_price(item)
+            if price is None:
+                continue
+            price, unit = price
+
+            # Check if the unit of price is allowed
+            if unit not in allowed_care_item_prices:
+                continue
+
+            # Check is user has enough money, fruits or coins to pay for item
+            if (unit == 'money' and User().get_bar() >= price) or \
+                (unit == 'fruits' and self.get_spores() >= price) or \
+                (unit == 'coins' and User().get_coins() >= price):
+                best_item = item
+
+        return best_item
+
+    def __care(self, care_name: Care, oid) -> bool:
+        """
+        Example
+        -------
         "entry": {
-			"pid": "272",
-			"points": "244",
-			"data": {
-				"used": {
-					"water": {
-						"oid": 3,
-						"time": 1705427331,
-						"duration": 28800,
-						"remain": 28800
-					}
-				}
-			},
-			"createdate": "1705427210"
-		},
-		"fruit_percent": 10,
-		"remain": 604679,
-"""
+            "pid": "272",
+            "points": "244",
+            "data": {
+                "used": {
+                    "water": {
+                        "oid": 3,
+                        "time": 1705427331,
+                        "duration": 28800,
+                        "remain": 28800
+                    }
+                }
+            },
+            "createdate": "1705427210"
+        },
+        "fruit_percent": 10,
+        "remain": 604679,
+        """
+
+        entry = self.__data.get('entry', None)
+        if entry is None:
+            return False
+
+        # Check if care item is still in use
+        if entry.get('data', {}).get('used', {}).get(care_name.value, {}).get('remain', 0) > 0:
+            return True
+
+        match care_name:
+            case Care.WATER:
+                Logger().print('Care megafruit with water')
+            case Care.LIGHT:
+                Logger().print('Care megafruit with light')
+            case Care.FERTILIZE:
+                Logger().print('Care megafruit with fertilizer')
+
+        data = self.__http.care(oid)
+        return self.__set_data(data)

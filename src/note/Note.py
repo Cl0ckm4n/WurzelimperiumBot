@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from enum import Enum
-import logging
+from src.logger.Logger import Logger
 from src.note.Http import Http
 from src.product.ProductData import ProductData
-
 
 class NoteSettings(Enum):
 
@@ -18,7 +17,7 @@ class NoteSettings(Enum):
     IVY_TYPE = "ivy:"
     HERBGARDEN_ACTIVE = "herbgarden:"
 
-class Note():
+class Note:
     """This class handles reading from the user notes"""
 
     def __init__(self):
@@ -35,8 +34,12 @@ class Note():
         self._ivy = None
         self._herbgarden_active = False
 
-    def get_note(self):
-        return self.__http.get_note()
+    # MARK: Basic functions
+
+    def get_note(self) -> str:
+        return self.__http.get_note() or ''
+
+    # MARK: Extended features
     
     def get_garden_plant_1(self) -> str:
         return self._garden_plant_1
@@ -66,8 +69,8 @@ class Note():
         min_stock_str = line.replace(prefix, '').strip()
         try:
             return int(min_stock_str)
-        except:
-            print(f'Error: "{prefix}" must be an int')
+        except Exception:
+            Logger().error(f'Error: "{prefix}" must be an int')
         return 0
 
     def get_min_stock(self, plant_name = None) -> int:
@@ -102,7 +105,6 @@ class Note():
         # Return default [] if not found in note
         return []
     
-
     def get_bonus_plant_id(self) -> int:
         note = self.get_note().replace('\r\n', '\n')
         lines = note.split('\n')
@@ -116,7 +118,6 @@ class Note():
             return plant_id
         return None
     
-
     def get_note_settings(self) -> None:
         note = self.get_note().replace('\r\n', '\n')
         lines = note.split('\n')
@@ -158,3 +159,17 @@ class Note():
                         self._watergarden_plant_edge = plant_name
                     if setting == NoteSettings.BEE_HIVES:
                         self._bee_hives = plant_name
+
+
+    def get_stop_bot(self) -> bool:
+        note = self.get_note().replace("\r\n", "\n")
+        lines = note.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+
+            if line.startswith("stopWIB"):
+                return True
+
+        # Return default False if not found in note
+        return False

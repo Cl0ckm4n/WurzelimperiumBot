@@ -6,11 +6,12 @@ Created on 21.01.2017
 @author: MrFlamez
 '''
 
-import time, logging, i18n
+from src.logger.Logger import Logger
+import time, i18n
 
 i18n.load_path.append('lang')
 
-class Session(object):
+class Session:
     """Session represents a PHP session"""
     # Session is valid for 2 h (7200 s)
     __lifetime         = 7200
@@ -19,7 +20,6 @@ class Session(object):
 
     def __init__(self):
         """Initialization of all attributes with a default value"""
-        self.__log = logging.getLogger('bot.Session')
         self.__session_id = None
         self.__server_url = None
         self.__server = None
@@ -47,8 +47,7 @@ class Session(object):
 
         self.__start_time = time.time()
         self.__end_time = self.__start_time + (self.__lifetime - self.__lifetime_reserve)
-
-        self.__log.info(f'Session (ID: {str(self.__session_id)}) geöffnet')
+        Logger().debug(f'Session (ID: {str(self.__session_id)}) started')
 
     def close(self):
         """Reset all informations"""
@@ -57,7 +56,7 @@ class Session(object):
         self.__server = None
         self.__start_time = None
         self.__end_time = None
-        self.__log.info(f'Session (ID: {session_id}) closed')
+        Logger().debug(f'Session (ID: {session_id}) closed')
 
     def get_remaining_time(self):
         """Get remaining time unit the session expires"""

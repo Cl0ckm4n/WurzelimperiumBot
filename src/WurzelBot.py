@@ -6,37 +6,40 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
-from collections import Counter
-from src.Bonsai import Bonsai
+from src.biogas.Biogas import Biogas
+from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
-from src.core.Config import Config
+from src.citypark.CityPark import CityPark
+from src.core.Feature import Feature
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
-from src.core.Feature import Feature
+from src.core.User import User
+from src.garden.aqua.AquaGarden import AquaGarden
 from src.garden.deco.Decogarden import Decogarden1, Decogarden2
-from src.Garten import Garden, AquaGarden, HerbGarden
+from src.garden.Garden import Garden
+from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.ivyhouse.Ivyhouse import Ivyhouse
-from src.stock.Stock import Stock
+from src.logger.Logger import Logger
 from src.marketplace.Marketplace import Marketplace
-from src.megafruit.Megafruit import Megafruit, Mushroom, Care_OID
-# from src.minigames.fair.Fair import Fair
-from src.Messenger import Messenger
+from src.megafruit.Megafruit import Megafruit
+from src.megafruit.MegafruitData import Mushroom, Care_OID
+from src.message.Messenger import Messenger
+from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
-from src.shop.ShopProducts import ShopProducts
+from src.shop.Shop import Shop
+from src.stock.Stock import Stock
 from src.snailracing.Snailracing import Snailracing
-from src.citypark.CityPark import CityPark
-from src.biogas.Biogas import Biogas
-from src.core.User import User
 from src.wimp.Wimp import Wimp
-import logging, i18n, datetime
+from collections import Counter
+import i18n, datetime
 
 i18n.load_path.append('lang')
 
-class WurzelBot(object):
+class WurzelBot:
     """
     Die Klasse WurzelBot übernimmt jegliche Koordination aller anstehenden Aufgaben.
     """
@@ -44,15 +47,9 @@ class WurzelBot(object):
 
 
     def __init__(self):
-        self.__config = Config()
-        self.__logBot = logging.getLogger("bot")
-        self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
-        self.feature = Feature()
-        self.product_data = ProductData()
-        self.user = User()
-        self.messenger = Messenger(self.__HTTPConn)
-        self.stock = Stock()
+        self.messenger = Messenger()
+        self.shop = Shop()
         self.gardens = []
         self.aquagarden = None
         self.herbgarden = None
@@ -62,90 +59,55 @@ class WurzelBot(object):
         self.wimparea = Wimp()
         self.quest = Quest()
         self.bonus = Bonus()
-        self.note = Note()
+        self.note = None
         self.park = None
         self.greenhouse = None
         self.biogas = None
         self.snailracing = None
         self.ivyhouse = None
-        # self.fair = None
         self.megafruit = None
+        self.minigames = Minigames()
 
 
-    def __init_gardens(self):
+    def __init_gardens(self) -> bool:
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
         #BG-"""Определя броя на градините и ги инициализира всички."""
 
         try:
-            for i in range(1, self.user.get_number_of_gardens() + 1):
-                self.gardens.append(Garden(self.__HTTPConn, i))
+            for i in range(1, User().get_number_of_gardens() + 1):
+                self.gardens.append(Garden(i))
 
-            if self.feature.is_aqua_garden_available() is True:
-                self.aquagarden = AquaGarden(self.__HTTPConn)
+            if Feature().is_aqua_garden_available():
+                self.aquagarden = AquaGarden()
 
-            if self.feature.is_herb_garden_available() is True:
-                self.herbgarden = HerbGarden(self.__HTTPConn)
+            if Feature().is_herb_garden_available():
+                self.herbgarden = HerbGarden()
 
-            if self.feature.is_honey_farm_available() is True:
+            if Feature().is_honey_farm_available():
                 self.honey = Honey()
 
-            if self.feature.is_bonsai_farm_available() is True:
-                self.bonsaifarm = Bonsai(self.__HTTPConn)
+            if Feature().is_bonsai_farm_available():
+                self.bonsaifarm = Bonsai()
 
-            if self.feature.is_city_park_available() is True:
+            if Feature().is_city_park_available():
                 self.park = CityPark()
 
-            if self.feature.is_greenhouse_available() is True:
+            if Feature().is_greenhouse_available():
                 self.greenhouse = Greenhouse()
+            
+            if Feature().is_note_available():
+                self.note = Note()
 
-            if self.feature.is_biogas_available() is True:
-                self.biogas = Biogas()
+            if Feature().is_megafruit_available():
+                self.megafruit = Megafruit()
 
-            if self.feature.is_snailracing_available() is True:
-                self.snailracing = Snailracing()
+            #TODO: Biogas, Snailracing, Ivyhouse, Decogarden1&2
 
-            if self.feature.is_ivyhouse_available() is True:
-                self.ivyhouse = Ivyhouse()
+            return True
 
-            if self.feature.is_megafruit_available() is True:
-                self.megafruit= Megafruit()
-
-            # self.fair = Fair() #TODO: check availability
-
-            self.decogarden1 = Decogarden1()
-            if self.feature.is_decogarden2_available() is True:
-                self.decogarden2 = Decogarden2()
-
-        except:
-            raise
-
-
-    def __getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
-        """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
-        """
-        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като низ.
-
-        if (sx == '1' and sy == '1'): return str(fieldID)
-        if (sx == '2' and sy == '1'): return str(fieldID) + ',' + str(fieldID + 1)
-        if (sx == '1' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 17)
-        if (sx == '2' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self.__logBot.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
-
-
-    def __getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
-        """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
-        """
-        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като списък от цели числа.
-
-        sFields = self.__getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
-        listFields = sFields.split(',') #Stringarray
-
-        for i in range(0, len(listFields)):
-            listFields[i] = int(listFields[i])
-
-        return listFields
+        except Exception:
+            Logger().print_exception('Failed to init gardens')
+            return False
 
 
     def login(self, server, user, pw, lang, portalacc) -> bool:
@@ -155,73 +117,59 @@ class WurzelBot(object):
         """
         #BG-Този метод стартира и инициализира Wurzelbot. За целта се извършва вход с предоставените данни за влизане и се инициализира всичко необходимо.
 
-        self.__logBot.info('-------------------------------------------')
-        self.__logBot.info(f'Starting Wurzelbot for User {user} on Server No. {server}')
+        Logger().debug(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         if portalacc == True:
-            try:
-                self.__HTTPConn.logInPortal(loginDaten)
-            except Exception as e:
-                if self.__config.isDevMode:
-                    raise e
-                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+            if not self.__HTTPConn.logInPortal(loginDaten):
                 return False
         else:
-            try:
-                self.__HTTPConn.logIn(loginDaten)
-            except Exception as e:
-                if self.__config.isDevMode:
-                    raise e
-                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+            if not self.__HTTPConn.logIn(loginDaten):
                 return False
 
-        try:
-            self.user.update()
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
+        if not User().update():
             return False
 
-        try:
-            self.__init_gardens()
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
+        if not self.__init_gardens():
             return False
 
-        self.user.accountLogin = loginDaten
-        self.product_data.init()
-        self.stock.init_product_list(self.product_data.get_product_id_list())
-        self.stock.update()
-        return True
+        User().accountLogin = loginDaten
+
+        if not ProductData().init():
+            return False
+
+        Stock().init_product_list(ProductData().get_product_id_list())
+        return Stock().update()
 
 
     def logout(self):
         """Exit the bot cleanly with login and reset the data"""
-        self.__logBot.info(i18n.t('wimpb.exit_wbot'))
-        try:
-            self.__HTTPConn.logOut()
-            self.__logBot.info(i18n.t('wimpb.logout_success'))
-            self.__logBot.info('-------------------------------------------')
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
+        Logger().print(i18n.t('wimpb.exit_wbot'))
 
-    def water(self):
+        if self.__HTTPConn.logOut():
+            Logger().print(i18n.t('wimpb.logout_success'))
+
+    def get_stop_bot_note(self) -> bool:
+        """Check notes for stop bot entry"""
+        if self.note is None:
+            return False
+
+        return self.note.get_stop_bot()
+
+    def water(self) -> bool:
         """Waters all of the player's gardens"""
         garden: Garden
         for garden in self.gardens:
-            garden.water()
+            if not garden.water():
+                return False
 
-        if self.feature.is_aqua_garden_available():
-            self.aquagarden.water()
+        if self.aquagarden is not None:
+            if not self.aquagarden.water():
+                return False
 
+        return True
 
-    def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
+    def writeMessageIfMailIsConfirmed(self, recipients, subject, body):
         """
         Erstellt eine neue Nachricht, füllt diese aus und verschickt sie.
         recipients muss ein Array sein!.
@@ -229,13 +177,11 @@ class WurzelBot(object):
         """
         #BG-Създава ново съобщение, попълва го и го изпраща.Получателите трябва да са в масив! Съобщение може да бъде изпратено само ако електронната поща е потвърдена.
 
-        if (self.user.is_mail_confirmed()):
-            try:
-                self.messenger.writeMessage(self.user.get_username(), recipients, subject, body)
-            except:
-                self.__logBot.error(i18n.t('wimpb.no_message'))
+        if User().is_mail_confirmed():
+            if not self.messenger.write(recipients, subject, body):
+                Logger().print_error(i18n.t('wimpb.no_message'))
 
-    def getEmptyFieldsOfGardens(self):
+    def get_empty_fields(self):
         """
         Gibt alle leeren Felder aller normalen Gärten zurück.
         Kann dazu verwendet werden zu entscheiden, wie viele Pflanzen angebaut werden können.
@@ -245,9 +191,9 @@ class WurzelBot(object):
         emptyFields = []
         try:
             for garden in self.gardens:
-                emptyFields.append(garden.getEmptyFields())
-        except:
-            self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
+                emptyFields.append(garden.get_empty_fields())
+        except Exception:
+            Logger().print_error(f'Could not determinate empty fields from garden {garden.getID()}.')
         return emptyFields
 
     def getGrowingPlantsInGardens(self):
@@ -255,8 +201,8 @@ class WurzelBot(object):
         try:
             for garden in self.gardens:
                 growingPlants.update(garden.getGrowingPlants())
-        except:
-            self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
+        except Exception:
+            Logger().print_error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
 
         return dict(growingPlants)
 
@@ -275,16 +221,14 @@ class WurzelBot(object):
 
         return dict(allWimpsProducts)
 
-    def sell_to_wimps(self, buy_from_shop: bool = True, minimal_balance: int = 500, 
+    def sell_to_wimps(self, buy_from_shop: bool = False, minimal_balance: int = 500, 
         method: str = "loss", max_amount: int = 100, max_loss_in_percent: int = 33
-    ):
-        if self.user.get_level() < 3:
-            return
+    ) -> bool:
+        if not User().update(True):
+            return False
+        points_before = User().get_points()
 
-        self.user.update(True)
-        points_before = self.user.get_points()
-
-        stock_list = self.stock.get_ordered_stock_list(filter_zero=False)
+        stock_list = Stock().get_ordered_stock_list(filter_zero=False)
         wimps_data = []
         rewards = 0
         npc_price = 0
@@ -299,16 +243,14 @@ class WurzelBot(object):
                 wimps_data.append({k: v})
 
         if not wimps_data:
-            print("No wimps available!")
-            self.__logBot.info("No wimps available!")
-            return
+            Logger().print("No wimps available!")
+            return False
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
                 if not self.check_wimps_profitable(products, method, max_amount, max_loss_in_percent):
                     self.wimparea.decline(wimp)
-                    self.__logBot.info(f"Declined wimp: {wimp}")
-                    print(f"Declined wimp: {wimp}")
+                    Logger().print(f"Declined wimp: {wimp}")
                     continue
 
                 check, stock_list = self.check_wimps_required_amount(products[1], stock_list, minimal_balance, buy_from_shop)
@@ -317,29 +259,27 @@ class WurzelBot(object):
 
                 rewards += products[0]
                 counter += 1
-                print(f"Selling products to wimp: {wimp}")
-                print(self.wimparea.products_to_string(products))
-                print("")
-                self.__logBot.info(f"Selling products to wimp: {wimp}")
+                Logger().print(f"Selling products to wimp: {wimp}")
+                Logger().print(self.wimparea.products_to_string(products))
+                Logger().print("")
                 self.wimparea.sell(wimp)
                 for id, amount in products[1].items():
                     stock_list[id] -= amount
-                    npc_price += self.product_data.get_product_by_id(id).get_price_npc() * amount
+                    npc_price += ProductData().get_product_by_id(id).get_price_npc() * amount
 
-        self.user.update(True)
+        if not User().update(True):
+            return False
 
         if counter > 0:
-            points_after = self.user.get_points()
+            points_after = User().get_points()
             points_gained = points_after - points_before
 
-            print(f"Gained {points_gained} points.")
-            print(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
-            self.__logBot.info(f"Gained {points_gained} points.")
-            self.__logBot.info(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
+            Logger().print(f"Gained {points_gained} points.")
+            Logger().print(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
 
-            sales, revenue = self.__HTTPConn.getInfoFromStats('Wimps')
+            sales, revenue = User().get_stats('Wimps')
 
-            statMsg = (
+            Logger().print(
                 f"\n--------------------------------\n"
                 f"Statistics\n"
                 f"--------------------------------\n"
@@ -347,10 +287,10 @@ class WurzelBot(object):
                 f"WIMP-revenue: {revenue}\n"
                 f"-------------------------------------"
             )
-            print(statMsg)
-            self.__logBot.info(statMsg)
         else:
-            print(f"Sold to {counter} wimps")
+            Logger().print(f"Sold to {counter} wimps")
+
+        return True
 
     def check_wimps_profitable(self, products, method: str = "loss", max_amount: int = 0, max_loss_in_percent: int = 33) -> bool:
         """
@@ -372,7 +312,7 @@ class WurzelBot(object):
             # Check if the price the wimp wants to pay is more then the given max loss in percent when buying every product in the shops.
             npc_sum = 0
             for id, amount in products[1].items():
-                npc_sum += self.product_data.get_product_by_id(id).get_price_npc() * amount
+                npc_sum += ProductData().get_product_by_id(id).get_price_npc() * amount
             loss = (npc_sum - products[0]) / npc_sum * 100
             # A negative loss is a profit
             if loss < 0:
@@ -381,19 +321,19 @@ class WurzelBot(object):
 
         return False
 
-    def check_wimps_required_amount(self, products, stock_list, minimal_balance, buy_from_shop: bool = True):
-        # At least level 3 is required in order to read the min_stock from the notes
-        if self.user.get_level() < 3:
-            return False
-
+    def check_wimps_required_amount(self, products, stock_list, minimal_balance, buy_from_shop: bool = False):
         for id, amount in products.items():
-            product = self.product_data.get_product_by_id(id)
-            min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), minimal_balance)
+            product = ProductData().get_product_by_id(id)
+
+            min_stock = minimal_balance
+            if self.note is not None:
+                min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), min_stock)
+
             if stock_list.get(id, None) < amount + min_stock:
                 if not buy_from_shop:
                     return False, stock_list
 
-                if self.buy_from_shop(int(id), minimal_balance) == -1:
+                if self.shop.buy(int(id), minimal_balance):
                     return False, stock_list
                 stock_list[id] += minimal_balance
 
@@ -401,16 +341,19 @@ class WurzelBot(object):
 
     def getNextRunTime(self):
         garden_time = []
+        garden: Garden
         for garden in self.gardens:
             garden_time.append(garden.getNextWaterHarvest())
 
-        self.user.update(True)
+        if not User().update(True):
+            return None
+
         human_time = datetime.datetime.fromtimestamp(min(garden_time))
-        print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
+        Logger().print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
         return min(garden_time)
 
     def hasEmptyFields(self):
-        emptyFields = self.getEmptyFieldsOfGardens()
+        emptyFields = self.get_empty_fields()
         amount = 0
         for garden in emptyFields:
             amount += len(garden)
@@ -423,17 +366,16 @@ class WurzelBot(object):
         weedFields = []
         try:
             for garden in self.gardens:
-                weedFields.append(garden.getWeedFields())
-        except:
-            self.__logBot.error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
+                weedFields.append(garden.get_weed_fields())
+        except Exception:
+            Logger().print_error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
 
         return weedFields
 
-    def harvest(self):
+    def harvest(self) -> bool:
         """Harvest all gardens"""
-        try:
-            garden: Garden = None
-            for garden in self.gardens:
+        garden: Garden
+        for garden in self.gardens:
                 # check rubbish for biogas
                 if self.feature.is_biogas_available():
                     j_content = self.__HTTPConn._changeGarden(garden.getID())
@@ -450,24 +392,22 @@ class WurzelBot(object):
                             print('➡ src/WurzelBot.py:423 counter:', counter)
 
                 #if capacity is available: harvest garden
-                garden.harvest()
+            if not garden.harvest():
+                return False
 
-            if self.feature.is_aqua_garden_available():
-                self.aquagarden.harvest()
-                pass
+        if self.aquagarden is not None:
+            if not self.aquagarden.harvest():
+                return False
 
-            self.stock.update()
-            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
-        except:
-            self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
+        Logger().print(i18n.t('wimpb.harvest_successful'))
+        return Stock().update()
 
-    def harvest_all_unfinished(self):
-        try:
-            garden: Garden
-            for garden in self.garten:
-                garden.harvest_unfinished()
-        except:
-            raise
+    def harvest_all_unfinished(self) -> bool:
+        garden: Garden
+        for garden in self.gardens:
+            if not garden.harvest_unfinished():
+                return False
+        return True
 
     def growVegetablesInGardens(self, productName, amount=-1):
         """
@@ -480,30 +420,30 @@ class WurzelBot(object):
             logMsg = f'Plant "{productName}" not found'
             return -1
 
-        product = self.product_data.get_product_by_name(productName)
+        product = ProductData().get_product_by_name(productName)
 
         if product is None:
-            logMsg = f'Plant "{productName}" not found'
-            self.__logBot.error(logMsg)
-            print(logMsg)
-            return -1
+            Logger().print_error(f'Plant "{productName}" not found')
+            return None
 
         if not product.is_vegetable() or not product.is_plantable():
-            logMsg = f'"{productName}" could not be planted'
-            self.__logBot.error(logMsg)
-            print(logMsg)
-            return -1
+            Logger().print_error(f'"{productName}" could not be planted')
+            return None
 
-        if amount == -1 or amount > self.stock.get_stock_by_product_id(product.get_id()):
-            amount = self.stock.get_stock_by_product_id(product.get_id())
+        if amount == -1 or amount > Stock().get_stock_by_product_id(product.get_id()):
+            amount = Stock().get_stock_by_product_id(product.get_id())
 
         remainingAmount = amount
         garden: Garden
         for garden in self.gardens:
-            planted += garden.grow(product.get_id(), product.get_sx(), product.get_sy(), remainingAmount)
+            lastPlanted = garden.grow(product.get_id(), product.get_sx(), product.get_sy(), remainingAmount)
+            if lastPlanted is None:
+                return None
+            planted += lastPlanted
             remainingAmount = amount - planted
 
-        self.stock.update()
+        if not Stock().update():
+            return None
 
         return planted
 
@@ -512,204 +452,181 @@ class WurzelBot(object):
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
         #BG-Засаждане на възможно най-много растения от определен вид през всички градини.
-        if self.feature.is_aqua_garden_available():
-            planted = 0
-            product = self.product_data.get_product_by_name(productName)
-            if product is None:
-                logMsg = f'Plant "{productName}" not found'
-                self.__logBot.error(logMsg)
-                print(logMsg)
-                return -1
+        if self.aquagarden is None:
+            return 0
 
-            if not product.is_water_plant() or not product.is_plantable():
-                logMsg = f'"{productName}" could not be planted'
-                self.__logBot.error(logMsg)
-                print(logMsg)
-                return -1
+        planted = 0
+        product = ProductData().get_product_by_name(productName)
+        if product is None:
+            Logger().print_error(f'Plant "{productName}" not found')
+            return None
 
-            if amount == -1 or amount > self.stock.get_stock_by_product_id(product.get_id()):
-                amount = self.stock.get_stock_by_product_id(product.get_id())
-            remainingAmount = amount
-            planted += self.aquagarden.grow(product.get_id(), product.get_sx(), product.get_sy(), product.get_edge(), remainingAmount)
-            self.stock.update()
+        if not product.is_water_plant() or not product.is_plantable():
+            Logger().print_error(f'"{productName}" could not be planted')
+            return None
 
-            return planted
+        if amount == -1 or amount > Stock().get_stock_by_product_id(product.get_id()):
+            amount = Stock().get_stock_by_product_id(product.get_id())
+        remainingAmount = amount
+        lastPlanted = self.aquagarden.grow(product.get_id(), product.get_sx(), product.get_sy(), product.get_edge(), remainingAmount)
+        if lastPlanted is None:
+            return None
+        planted += lastPlanted
+        if not Stock().update():
+            return None
 
-    def printStock(self):
+        return planted
+
+    def printStock(self, category = None):
         isSmthPrinted = False
-        for productID in self.stock.get_keys():
-            product = self.product_data.get_product_by_id(productID)
+        for productID in Stock().get_keys():
+            product = ProductData().get_product_by_id(productID)
 
-            amount = self.stock.get_stock_by_product_id(productID)
+            if category is not None and product.get_category() != category:
+                continue
+
+            amount = Stock().get_stock_by_product_id(productID)
             if amount == 0: continue
 
-            print(str(product.get_name()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
+            Logger().print(str(product.get_name()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
             isSmthPrinted = True
 
         if not isSmthPrinted:
-            print('Your stock is empty')
+            Logger().print('Your stock is empty')
 
     def get_lowest_stock_entry(self):
-        entryID = self.stock.get_lowest_stock_entry()
+        entryID = Stock().get_lowest_stock_entry()
         if entryID == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(entryID).get_name()
+        return ProductData().get_product_by_id(entryID).get_name()
 
     def get_ordered_stock_list(self):
         orderedList = ''
-        for productID in self.stock.get_ordered_stock_list():
-            orderedList += str(self.product_data.get_product_by_id(productID).get_name()).ljust(20)
-            orderedList += str(self.stock.get_ordered_stock_list()[productID]).rjust(5)
+        for productID in Stock().get_ordered_stock_list():
+            orderedList += str(ProductData().get_product_by_id(productID).get_name()).ljust(20)
+            orderedList += str(Stock().get_ordered_stock_list()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
 
     def getLowestVegetableStockEntry(self):
         # Grow only plants
-        plantOnly = self.note.get_grow_only()
-        if len(plantOnly) != 0:
-            for productID in self.stock.get_ordered_stock_list():
-                if self.product_data.get_product_by_id(productID).get_name() in plantOnly:
-                    return self.product_data.get_product_by_id(productID).get_name()
+        if self.note is not None:
+            plantOnly = self.note.get_grow_only()
+            if len(plantOnly) != 0:
+                for productID in Stock().get_ordered_stock_list():
+                    if ProductData().get_product_by_id(productID).get_name() in plantOnly:
+                        return ProductData().get_product_by_id(productID).get_name()
 
-            return 'Your stock is empty'
+                return 'Your stock is empty'
 
         # Default behaviour
         lowestStock = -1
         lowestProductId = -1
-        for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_vegetable() or \
-                not self.product_data.get_product_by_id(productID).is_plantable():
+        for productID in Stock().get_ordered_stock_list():
+            if not ProductData().get_product_by_id(productID).is_vegetable() or \
+                not ProductData().get_product_by_id(productID).is_plantable():
                 continue
 
-            currentStock = self.stock.get_stock_by_product_id(productID)
+            currentStock = Stock().get_stock_by_product_id(productID)
             if lowestStock == -1 or currentStock < lowestStock:
                 lowestStock = currentStock
                 lowestProductId = productID
                 continue
 
         if lowestProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestProductId).get_name()
+        return ProductData().get_product_by_id(lowestProductId).get_name()
 
     def getLowestSingleVegetableStockEntry(self):
         lowestSingleStock = -1
         lowestSingleProductId = -1
-        for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_vegetable() or \
-                not self.product_data.get_product_by_id(productID).is_plantable() or \
-                not self.product_data.get_product_by_id(productID).get_name() in self.product_data.get_single_field_vegetable_list():
+        for productID in Stock().get_ordered_stock_list():
+            if not ProductData().get_product_by_id(productID).is_vegetable() or \
+                not ProductData().get_product_by_id(productID).is_plantable() or \
+                not ProductData().get_product_by_id(productID).get_name() in ProductData().get_single_field_vegetable_list():
                 continue
 
-            currentStock = self.stock.get_stock_by_product_id(productID)
+            currentStock = Stock().get_stock_by_product_id(productID)
             if lowestSingleStock == -1 or currentStock < lowestSingleStock:
                 lowestSingleStock = currentStock
                 lowestSingleProductId = productID
                 continue
 
         if lowestSingleProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestSingleProductId).get_name()
+        return ProductData().get_product_by_id(lowestSingleProductId).get_name()
 
     def getLowestWaterPlantStockEntry(self):
         lowestStock = -1
         lowestProductId = -1
-        for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_water_plant() or \
-                not self.product_data.get_product_by_id(productID).is_plantable():
+        for productID in Stock().get_ordered_stock_list():
+            if not ProductData().get_product_by_id(productID).is_water_plant() or \
+                not ProductData().get_product_by_id(productID).is_plantable():
                 continue
 
-            currentStock = self.stock.get_stock_by_product_id(productID)
+            currentStock = Stock().get_stock_by_product_id(productID)
             if lowestStock == -1 or currentStock < lowestStock:
                 lowestStock = currentStock
                 lowestProductId = productID
                 continue
 
         if lowestProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestProductId).get_name()
+        return ProductData().get_product_by_id(lowestProductId).get_name()
 
     def printProductDetails(self):
-        self.product_data.print_all()
+        ProductData().print_all()
 
     def printVegetableDetails(self):
-        self.product_data.print_all_vegetables()
+        ProductData().print_all_vegetables()
 
     def printWaterPlantDetails(self):
-        self.product_data.print_all_water_plants()
+        ProductData().print_all_water_plants()
 
-    def remove_weeds(self):
+    def remove_weeds(self) -> bool:
         """Removes weeds/moles/stones from all gardens"""
         #TODO: Add aqua garden
-        try:
-            for garden in self.gardens:
-                garden.remove_weeds()
-            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
-        except:
-            self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
+        garden: Garden
+        for garden in self.gardens:
+            if not garden.remove_weeds():
+                Logger().print_error(i18n.t('wimpb.w_harvest_not_successful'))
+                return False
+        Logger().print(i18n.t('wimpb.w_harvest_successful'))
 
-    def get_daily_bonuses(self):
+    def get_daily_bonuses(self) -> bool:
         self.bonus.get_daily_login_bonus()
 
-        if self.user.is_premium_active():
+        if User().is_premium_active():
             self.bonus.collect_bonus_item_points()
 
-        if self.user.is_guild_member():
-            self.bonus.collect_lucky_mole()
+        if User().is_guild_member():
+            if not self.bonus.collect_lucky_mole():
+                return False
+
+        return True
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
-        if self.user.get_bar() < MINwt:
-            print('Zuwenig WT')
-            pass
-        if self.user.get_level() > 23 and self.user.get_bar() > MINwt:
+        if User().get_bar() < MINwt:
+            Logger().print('Zu wenig WT')
+            return
+
+        if User().get_level() > 23 and User().get_bar() > MINwt:
             questnr = self.__HTTPConn.initInfinityQuest()['questnr']
             if int(questnr) <= 500:
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
-                    #print(item)
+                    #Logger().print(item)
                     product = item['pid']
-                    product = self.product_data.get_product_by_id(product)
-                    #print(f'Pid {product.get_id()}')
+                    product = ProductData().get_product_by_id(product)
+                    #Logger().print(f'Pid {product.get_id()}')
                     needed = item['amount']
-                    stored = self.stock.get_stock_by_product_id(product.get_id())
-                    #print(f'stored {stored}')
+                    stored = Stock().get_stock_by_product_id(product.get_id())
+                    #Logger().print(f'stored {stored}')
                     if needed >= stored:
                         missing = abs(needed - stored) + 10
-                        #print(f'missing {missing}')
-                        self.buy_from_shop(product.get_id(),missing)
-                    try:
-                        self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
-                    except:
-                        pass
+                        #Logger().print(f'missing {missing}')
+                        self.shop.buy(product.get_id(),missing)
 
-    # Shops
-    def buy_from_shop(self, product_name, amount: int):
-        if type(product_name) is int:
-            product_name = self.product_data.get_product_by_id(product_name).get_name()
-
-        product = self.product_data.get_product_by_name(product_name)
-        if product is None:
-            logMsg = f'Plant "{product_name}" not found'
-            self.__logBot.error(logMsg)
-            print(logMsg)
-            return -1
-
-        productId = product.get_id()
-
-        Shop = None
-        for k, id in ShopProducts.products().items():
-            if product_name in k:
-                Shop = id
-                break
-        if Shop in [1,2,3,4]:
-            try:
-                self.__HTTPConn.buy_from_shop(Shop, productId, amount)
-            except:
-                pass
-        elif Shop == 0:
-            try:
-                self.__HTTPConn.buyFromAquaShop(productId, amount)
-            except:
-                pass
-        return 0
+                    self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
 
     # Bees
-    def send_bees(self, tour: int):
+    def send_bees(self, tour: int) -> bool:
         """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
         if not self.honey:
             return
@@ -719,66 +636,117 @@ class WurzelBot(object):
             self.change_all_hives_types(product_name=bee_hive_plant)
 
         honey_count = {}
-        self.__update_honey_count(honey_count, self.honey.check_pour_honey())
+        if not self.__update_honey_count(honey_count, self.honey.check_pour_honey()):
+            return False
 
         while self.honey.check_start_hives():
-            self.honey.start_tour(tour)
-            self.__update_honey_count(honey_count, self.honey.check_pour_honey())
+            if not self.honey.start_tour(tour):
+                return False
+            if not self.__update_honey_count(honey_count, self.honey.check_pour_honey()):
+                return False
 
         for key, value in honey_count.items():
-            self.__logBot.info(f'Collected {value} {self.product_data.get_product_by_id(key).get_name()}.')
+            Logger().print(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
 
-    def __update_honey_count(self, honeycount, transfer):
+        return True
+
+    def __update_honey_count(self, honey_count, transfer) -> bool:
+        if transfer is None:
+            return False
         for key, value in transfer.items():
-            if key in honeycount:
-                honeycount[key] += value
+            if key in honey_count:
+                honey_count[key] += value
             else:
-                honeycount[key] = value
+                honey_count[key] = value
+        return True
 
-    def change_all_hives_types(self, product_name: str):
-        if self.honey:
-            product = self.product_data.get_product_by_name(product_name)
-            if product is not None:
-                self.honey.change_all_hives_types(product.get_id())
-            else:
-                self.__logBot.error(f"Could not get product: {product_name}")
+    def change_all_hives_types(self, product_name: str) -> bool:
+        if not self.honey:
+            return False
+        return self.honey.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
 
     # Bonsai
-    def cut_and_renew_bonsais(self):
-        """cut all branches and renew bonsais if lvl 2"""
+    def cut_and_renew_bonsais(self, finish_level: int = 2, bonsai = None, allowed_prices: list = ['money', 'coins']):
+        """
+        cut all branches and renew bonsais if lvl 2
+        allowed_prices: All allowed values: ['money', 'coins']
+        """
         #BG-Ако нивото е 2, отрежи всички клони и поднови бонсаите.
-        self.bonsaifarm.cutAllBonsai()
-        self.bonsaifarm.checkBonsai()
-        self.bonsaifarm.cutAllBonsai()
+        if self.bonsaifarm is None:
+            return
+
+        self.bonsaifarm.cut_all()
+        self.bonsaifarm.check(finish_level, bonsai, allowed_prices)
+        self.bonsaifarm.cut_all()
 
     # City park
-    def check_park(self):
+    def check_park(self) -> bool:
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
-        self.park.collect_cash()
-        self.park.renew_all_items()
+        if not self.park.collect_cash():
+            return False
+        return self.park.renew_all_items()
 
-    def remove_park_items(self):
+    def remove_park_items(self): #TODO:
         self.park.remove_all_items()
 
     # Herb garden
-    def check_herb_garden(self):
-        if self.feature.is_herb_garden_available() is not True:
-            return
-
-        self.herbgarden.remove_weeds()
-        self.herbgarden.harvest()
-        self.herbgarden.grow_plant(self)
+    def check_herb_garden(self) -> bool:
+        if self.herbgarden is None:
+            return False
+        if not self.herbgarden.remove_weeds():
+            return False
+        if not self.herbgarden.harvest():
+            return False
+        if self.herbgarden.grow_plant() is None:
+            return False
+        return True
 
     # Greenhouse
-    def check_greenhouse(self):
-        self.greenhouse.do_all_cactus_care()
+    def check_greenhouse(self) -> bool:
+        if self.greenhouse is None:
+            return False
 
-    # Minigames
-    # def play_fair(self):
-    #     self.fair.craft_tickets()
-    #     self.fair.play_thimblerig()
-    #     self.fair.play_wetgnome()
-    # Snailracing
+        return self.greenhouse.do_all_cactus_care()
+
+    # Megafruit
+    def check_megafruit(self, mushroom: Mushroom = Mushroom.MUSHROOM, buy_from_shop: bool = False, allowed_care_item_prices: list = ['money', 'fruits']) -> bool:
+        """
+        allowed_care_item_prices: All allowed values: ['money', 'coins', 'fruits']
+        """
+        if self.megafruit is None:
+            return False
+
+        if not self.megafruit.harvest():
+            return False
+
+        # Only check for stock if no plant is growing
+        if not self.megafruit.is_planted() and self.megafruit.get_remaining_time() == 0:
+            plant_id = mushroom.value
+            # TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
+            min_stock = 1800
+
+            if Stock().get_stock_by_product_id(plant_id) < min_stock:
+                if not buy_from_shop:
+                    return False
+
+                if self.buy_from_shop(int(plant_id), min_stock) == -1:
+                    return False
+
+            if not self.megafruit.start(mushroom):
+                return False
+
+        # Get best care item for each type and apply it
+        for type in ['water', 'light', 'fertilize']:
+            best_item = self.megafruit.get_best_care_item(type, allowed_care_item_prices)
+            if best_item is None:
+                continue
+
+            if not self.megafruit.care(best_item):
+                return False
+
+        return self.megafruit.harvest()
+    
+    #TODO:
     def check_snailracing(self):
         self.snailracing.collect_bar_production()
         self.snailracing.start_bar_production()
@@ -794,21 +762,3 @@ class WurzelBot(object):
     def collect_decogardens(self):
         self.decogarden1.collect()
         self.decogarden2.collect()
-
-    #Megafruit
-    def check_megafruit(self, mushroom: Mushroom, buy_from_shop: bool = False) -> bool:
-        stock_list = self.stock.get_ordered_stock_list(filter_zero=False)
-        id = mushroom.value
-        min_stock = 1800 #TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
-        if stock_list.get(str(id), 0) < min_stock:
-            if not buy_from_shop:
-                return False
-
-            if self.buy_from_shop(int(id), min_stock) == -1:
-                return False
-        self.megafruit.megafruit_finish()
-        self.megafruit.megafruit_start(mushroom)
-        self.megafruit.megafruit_care(oid=Care_OID.Water3)
-        self.megafruit.megafruit_care(oid=Care_OID.Light3)
-        self.megafruit.megafruit_care(oid=Care_OID.Fertilize3)
-        

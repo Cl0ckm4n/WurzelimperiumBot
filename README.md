@@ -55,6 +55,7 @@ details      Show details to the products
              Opt. argument: "all", "water"
 buy          Buy a given plant
 exit         Close connection and exit bot
+games        Play the minigames
 grow         Grow a given plant
 grow-water   Grow a given water plant
 harvest      Harvest all gardens
@@ -100,6 +101,7 @@ There is also a standalone executable file for windows. [Win32-CLI-Standalone](h
 - Automated processing of Wimps in gardens.  
   You can set the minimum stock in the account notes:  
   e.g. `minStock: 100` or `minStock(Apple): 200`
+- You can disable the Bot by adding `stopWIB` in your notes
 - Automatically claiming of daily login bonus.
 
 ## Installation

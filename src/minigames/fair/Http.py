@@ -2,81 +2,41 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 
-    def fair_init(self):
+    def init_game(self):
         address = f"ajax/ajax.php?do=fair_init&init=1&token={self.__http.token()}"
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to init fair game')
+            return None
 
-    def fair_craft_ticket(self):
+    def craft_ticket(self):
         address = f"ajax/ajax.php?do=fair_craftticket&token={self.__http.token()}"
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to craft tickets for fair game')
+            return None
     
-    def fair_pay_ticket(self, type):
+    def pay_ticket(self, type):
         """
         @param: type = wetgnome, thimblerig
         """
         address = f"ajax/ajax.php?do=fair_payticket&type={type}&token={self.__http.token()}"
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-    
-    # Thimblerig, Hütchenspieler
-    def fair_thimblerig_start(self):
-        address = f"ajax/ajax.php?do=thimblerig_start&token={self.__http.token()}"
-        try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-    
-    def fair_thimblerig_select(self, mug: int):
-        """
-        @param: mug = 1, 2, 3
-        """
-        address = f"ajax/ajax.php?do=thimblerig_select&mug={mug}&token={self.__http.token()}"
-        try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-    
-    # Wetgnome, Nasser Zwerg
-    def fair_wetgnome_start(self):
-        address = f"ajax/ajax.php?do=wetgnome_start&token={self.__http.token()}"
-        try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-    
-    def fair_wetgnome_select(self, x, y):
-        """
-        @param: x = game_id + position, y = game_id + position
-        """
-        address = f"ajax/ajax.php?do=wetgnome_select&x={x}&y={y}&token={self.__http.token()}"
-        try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to pay tickets for fair game')
+            return None

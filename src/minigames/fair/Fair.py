@@ -1,26 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
-import random
 import time
+from src.logger.Logger import Logger
 from src.minigames.fair.Http import Http
+from src.minigames.fair.Thimblerig import Thimblerig
+from src.minigames.fair.Wetgnome import Wetgnome
 
 REWARD_MAX = 300
 
 class Fair:
     def __init__(self):
-        self._httpConn = Http()
-        self._logFair = logging.getLogger('bot.Fair')
-        self._logFair.setLevel(logging.DEBUG)
-        data = self._httpConn.fair_init()
-        self.__set_data(data)
+        self.__http = Http()
+
+    def __init_game(self) -> bool:
+        data = self.__http.init_game()
+        if data is None:
+            return False
+        if not self.__set_data(data):
+            return False
         self.__thimblerig = Thimblerig(data)
         self.__wetgnome = Wetgnome(data)
+        return True
 
-    def __set_data(self, data):
+    def is_available(self, page_content: str) -> bool:
+        return 'id="fair"' in page_content
+
+    def play(self) -> bool:
+        if not self.__init_game():
+            return False
+        if self.__http.init_game() is None:
+            return False
+        if not self.craft_tickets():
+            return False
+        if not self.play_thimblerig():
+            return False
+        return self.play_wetgnome()
+
+    def __set_data(self, data) -> bool:
+        if data is None:
+            return False
         self.__data = data["data"]
-        self.__remain = self.__data['remain']
         self.__points = self.__data['data']['points']
         self.__tickets = self.__data['data']['tickets']
         self.__ticketcost = self.__data['config']['ticketcost']
@@ -30,119 +50,85 @@ class Fair:
         self.__wetgnome_round = self.__data['wetgnome']['data']['round']
         self.__wetgnome_points = self.__data['wetgnome']['data']['points']
         self.__wetgnome_maxrounds = self.__data['wetgnome']['config']['maxrounds']
+        return True
 
-    def craft_tickets(self) -> None:
-        msg = f"{self.__points} points available. A ticket costs {self.__ticketcost} points."
+    def craft_tickets(self) -> bool:
+        Logger().print(f"{self.__points} points available. A ticket costs {self.__ticketcost} points.")
         if self.__points >= self.__ticketcost:
-            data = self._httpConn.fair_craft_ticket()
+            data = self.__http.craft_ticket()
+            if data is None:
+                return False
             self.__set_data(data)
-            msg = f"Crafted {int(self.__points/self.__ticketcost)} tickets."
-        msg += f"\nYou have {self.__tickets}x tickets in stock."
-        self._logFair.info(msg)
+            Logger().print(f"Crafted {int(self.__points/self.__ticketcost)} tickets.")
+        Logger().print(f"You have {self.__tickets}x tickets in stock.")
+        return True
 
-    def __pay_ticket_thimblerig(self):
-        if self.__thimblerig_round == 0:
-            content = self._httpConn.fair_pay_ticket("thimblerig")
-            self.__set_data(content)
-
-    def __pay_ticket_wetgnome(self):
-        if self.__wetgnome_round == 0:
-            content = self._httpConn.fair_pay_ticket("wetgnome")
-            self.__set_data(content)
-
-    def play_thimblerig(self):
-        self._logFair.info(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
+    def play_thimblerig(self) -> bool:
+        Logger().print(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
         while self.__tickets > 0:
+            if self.__thimblerig_points >= REWARD_MAX:
+                Logger().print("Thimblerig already finished!")
+                return
+
             if not self.__data["thimblerig"]["data"].get("wait", 0):
-                self.__pay_ticket_thimblerig()
-            if not self.__thimblerig_points < REWARD_MAX:
-                self._logFair.info("Thimblerig already finished!")
-                break
+                if not self.__pay_ticket_thimblerig():
+                    return False
+
             while 1 <= self.__thimblerig_round <= self.__thimblerig_maxrounds:
                 if not self.__data["thimblerig"]["data"].get("wait", 0):
-                    self.__thimblerig_round = self.__thimblerig.game_start(self.__thimblerig_round)
-                time.sleep(2) # wait for animation
-                self.__thimblerig_round = self.__thimblerig.game_select()
-            self._logFair.info(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
-        else:
-            self._logFair.error("No tickets for playing!")
+                    self.__thimblerig_round = self.__thimblerig.start(self.__thimblerig_round)
+                    if self.__thimblerig_round is None:
+                        return False
 
-    def play_wetgnome(self):
-        self._logFair.info(f"Reached: {self.__wetgnome.get_points()}/300 airsnakes.")
+                time.sleep(2) # wait for animation
+                self.__thimblerig_round = self.__thimblerig.select()
+                if self.__thimblerig_round is None:
+                    return False
+
+            Logger().print(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
+        else:
+            Logger().print_error("No tickets for playing!")
+        return True
+
+    def __pay_ticket_thimblerig(self) -> bool:
+        if self.__thimblerig_round == 0:
+            content = self.__http.pay_ticket("thimblerig")
+            if content is None:
+                return False
+            self.__set_data(content)
+        return True
+
+    def play_wetgnome(self) -> bool:
+        Logger().print(f"Wetgnome: {self.__wetgnome.get_points()}/300 airsnakes.")
         while self.__tickets > 0:
+            if self.__wetgnome_points >= REWARD_MAX:
+                Logger().print("Wetgnome already finished!")
+                return True
+
             if not self.__data["wetgnome"]["data"].get("wait", 0):
-                self.__pay_ticket_wetgnome()
-            if not self.__wetgnome_points < REWARD_MAX:
-                self._logFair.info("Wetgnome already finished!")
-                break
+                if not self.__pay_ticket_wetgnome():
+                    return False
+
             while 1 <= self.__wetgnome_round <= self.__wetgnome_maxrounds:
                 if not self.__data["wetgnome"]["data"].get("wait", 0):
-                    self.__wetgnome_round, game_id = self.__wetgnome.game_start(self.__wetgnome_round)
+                    self.__wetgnome_round, game_id = self.__wetgnome.start(self.__wetgnome_round)
+                    if self.__wetgnome_round is None:
+                        return False
+
                 time.sleep(2) # wait for animation
-                self.__wetgnome_round = self.__wetgnome.game_select(game_id)
-            self._logFair.info(f"Reached: {self.__wetgnome.get_points()}/300 airsnakes.")
+                self.__wetgnome_round = self.__wetgnome.select(game_id)
+                if self.__wetgnome_round is None:
+                    return False
+
+            Logger().print(f"Wetgnome: {self.__wetgnome.get_points()}/300 airsnakes.")
         else:
-            self._logFair.error("No tickets for playing!")
+            Logger().print_error("No tickets for playing!")
+        return True
 
-class Thimblerig():
-    def __init__(self, data):
-        self._httpConn = Http()
-        self.round = 0
-        self.mug = 0
-        self.__set_data(data["data"]["thimblerig"])
-        
-    def __set_data(self, data):
-        self.__data = data
-        self.__points = self.__data['data']['points']
-        self.round = self.__data['data']['round']
-        if "game" in data["data"]:
-            self.mug = self.__data["data"]["game"]["mug"]
-
-    def game_start(self, round):
-        if 1 <= round <= 3:
-            content = self._httpConn.fair_thimblerig_start()
-            self.__set_data(content["data"])
-        return self.round
-
-    def game_select(self):
-        if 1 <= self.mug <= 3:
-            content = self._httpConn.fair_thimblerig_select(self.mug)
-            self.__set_data(content["data"])
-        return self.round
-    
-    def get_points(self):
-        return self.__points
-        
-class Wetgnome():
-    def __init__(self, data):
-        self._httpConn = Http()
-        self.round = 0
-        self.game = 0
-        self.__set_data(data["data"]["wetgnome"])
-        
-    def __set_data(self, data):
-        self.__data = data
-        self.__points = self.__data['data']['points']
-        self.round = self.__data['data']['round']
-        if "game" in data["data"]:
-            self.game = self.__data["data"]["game"]
-
-    def game_start(self, round):
-        if 1 <= round <= 3:
-            content = self._httpConn.fair_wetgnome_start()
-            self.__set_data(content["data"])
-        return self.round, self.game
-
-    def game_select(self, game_id):
-        x = 48 + random.randint(25, 75) # middle=51 --> full range von 0-102
-        x = x + int(game_id[0])
-
-        y = 49 + random.randint(25, 75) # middle=51 --> full range von 0-102
-        y = y + int(game_id[0])
-
-        content = self._httpConn.fair_wetgnome_select(x, y)
-        self.__set_data(content["data"])
-        return self.round
-    
-    def get_points(self):
-        return self.__points
+    def __pay_ticket_wetgnome(self) -> bool:
+        if self.__wetgnome_round == 0:
+            content = self.__http.pay_ticket("wetgnome")
+            if content is None:
+                return False
+            self.__set_data(content)
+        return True

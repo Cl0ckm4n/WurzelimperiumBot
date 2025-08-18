@@ -2,42 +2,49 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 
     def init_park(self):
         """Activate the park and return JSON content(status, data, init, questnr, questData, quest)"""
         try:
-            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_init&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(f'ajax/ajax.php?do=park_init&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to init park')
+            return None
 
     def collect_cash_point(self):
         """collect the rewards from the cashpoint and return JSON content(status, data, clearcashpoint, updateMenu)"""
         try:
-            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_clearcashpoint&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(f'ajax/ajax.php?do=park_clearcashpoint&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to collect city park cash point')
+            return None
 
-    def renew_item(self, tile, park_id):
+    def renew_item(self, tile, park_id=1):
         """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
+        address = f'ajax/ajax.php?do=park_renewitem&parkid={park_id}&tile={tile}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_renewitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to renew city park item')
+            return None
 
-    def remove_item(self, tile, park_id):
+    def remove_item(self, tile, park_id=1):
+        address = f'ajax/ajax.php?do=park_removeitem&parkid={park_id}&tile={tile}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=park_removeitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to remove city park items')
+            return None

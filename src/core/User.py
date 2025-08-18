@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HttpUser import Http
+from src.logger.Logger import Logger
 import html
 
-class User():
+class User:
     _instance = None
 
     def __new__(self):
@@ -22,21 +23,37 @@ class User():
         self.__is_mail_confirmed = None
         self.__has_watering_gnome_helper = None
 
-    def update(self, only_data = False):
+    def update(self, only_data = False) -> bool:
         """Get user data from server and save in this class"""
         try:
             self.__data = self.__http.load_data()
+            if self.__data is None:
+                return False
+
             if only_data:
-                return
+                return True
 
-            self.__number_of_gardens = self.__http.get_info_from_stats("Gardens")
-            self.__user_id = self.__http.get_user_id()
+            self.__number_of_gardens = self.get_stats("Gardens")
+            if self.__number_of_gardens is None:
+                return False
+
+            self.__user_id = self.__http.user_id()
+
             self.__is_mail_confirmed = self.__http.check_mail_confirmed()
-            self.__has_watering_gnome_helper = self.__http.has_watering_gnome_helper()
-        except:
-            print('Could not load the user data')
+            if self.__is_mail_confirmed is None:
+                return False
 
-    def get_user_id(self) -> str:
+            has_watering_gnome_helper = self.__http.has_watering_gnome_helper()
+            if has_watering_gnome_helper is None:
+                return False
+            self.__has_watering_gnome_helper = self.is_premium_active() and has_watering_gnome_helper
+
+            return True
+        except Exception:
+            Logger().print_exception("Failed to update user data")
+            return False
+
+    def user_id(self) -> str:
         return self.__user_id
 
     def get_username(self) -> str:
@@ -61,6 +78,9 @@ class User():
         return self.__data['bar']
 
     def is_premium_active(self) -> bool:
+        if self.__data['citymap'] == 0:
+            return False
+        
         return self.__data['citymap']['premium'] == "1"
 
     def is_guild_member(self) -> bool:
@@ -77,3 +97,6 @@ class User():
 
     def has_watering_gnome_helper(self) -> bool:
         return self.__has_watering_gnome_helper
+
+    def get_stats(self, info):
+        return self.__http.get_info_from_stats(info)
