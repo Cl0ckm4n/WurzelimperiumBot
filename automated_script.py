@@ -4,6 +4,7 @@
 import argparse
 import time
 import i18n
+from src.bonsai.ShopProduct import CYPRESS
 from src.core.Config import Config
 from src.logger.Logger import Logger
 from src.megafruit.Megafruit import Mushroom
@@ -99,7 +100,7 @@ def main():
         # Play minigames
         Logger().print('')
         Logger().print('Playing minigames...')
-        wurzelBot.minigames.play()
+        wurzelBot.minigames.play(allowed_events = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'fair', 'pumpkin_digging'])
 
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
@@ -117,6 +118,7 @@ def main():
         wurzelBot.check_park()
         wurzelBot.check_snailracing()
         wurzelBot.collect_decogardens()
+        
     finally:
         # Close connection
         # BG-Затваряне на връзката

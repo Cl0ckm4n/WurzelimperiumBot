@@ -82,18 +82,11 @@ class Http:
         plants_in_garden = []
         for field, attributes in j_content['garden'].items():
             if not attributes[1] == 1 and attributes[2] == 1 and attributes[5] == 1: # calc garden (only index 1,1) - growing plants && eintrag 6 muss == 1 (d.h. Pflanze; 4 = Deko)
-                print('➡ src/core/HTTPCommunication.py:339 attributes1:', attributes[1])
-                print('➡ src/core/HTTPCommunication.py:339 attributes2:', attributes[2])
-                print('➡ src/core/HTTPCommunication.py:339 attributes5:', attributes[5])
                 continue
             plants_in_garden.append(str(attributes[0]))
-        print('➡ src/core/HTTPCommunication.py:339 plants_in_garden:', plants_in_garden)
 
         growing_plants = self.__find_growing_plants_in_json(j_content)
         grown_plants = Counter(plants_in_garden) - Counter(growing_plants)
-        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(plants_in_garden))
-        print('➡ src/core/HTTPCommunication.py:341 result:', Counter(growing_plants))
-        print('➡ src/core/HTTPCommunication.py:341 result:', grown_plants)
         
         return grown_plants
 
