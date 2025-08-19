@@ -105,13 +105,11 @@ def main():
         if wurzelBot.bonsaifarm is not None:
             Logger().print('')
             Logger().print('Cutting bonsais...')
-            wurzelBot.cut_and_renew_bonsais(finish_level=2)
+            wurzelBot.cut_and_renew_bonsais(finish_level=6, bonsai=CYPRESS, allowed_prices=['money']) #TODO: adjust level
 
         # Taking care of megafruit
         if wurzelBot.megafruit is not None:
-            Logger().print('')
-            Logger().print('Taking care of megafruit...')
-            wurzelBot.check_megafruit(mushroom=Mushroom.GIANT_PUFFBALL, buy_from_shop=True)
+            wurzelBot.check_megafruit(mushroom=Mushroom.GIANT_PUFFBALL, buy_from_shop=True, allowed_care_item_prices = ['money'])
 
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()
