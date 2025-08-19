@@ -58,4 +58,13 @@ def get_tree_price(tree: int) -> list|None:
         return [1000, 'money']
     if tree == MONEY_TREE:
         return [20, 'coins']
+    if tree == SPRUCE_FOREST:
+        return [3000, 'zen_points']
+    if tree == CYPRESS:
+        return [50000, 'money']
+    if tree == JUNIPER:
+        return [40, 'coins']
+    if tree == OAK:
+        return [6000, 'zen_points']
+    #TODO: MAPLE, ASH, CHERRY_TREE
     return None
