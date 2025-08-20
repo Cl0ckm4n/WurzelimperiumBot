@@ -95,3 +95,11 @@ class Feature:
             return self.__city_data['data']['location']['decogarden2']['bought'] == 1
         else:
             return False
+        
+    def is_vacation_available(self) -> bool:
+        if User().get_level() < 23:
+            return False
+        if 'vacation' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['vacation']['bought'] == 1
+        else:
+            return False

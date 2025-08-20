@@ -34,6 +34,7 @@ from src.quest.Quest import Quest
 from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from src.snailracing.Snailracing import Snailracing
+from src.vacation.Vacation import Vacation
 from src.wimp.Wimp import Wimp
 from collections import Counter
 import i18n, datetime
@@ -68,6 +69,7 @@ class WurzelBot:
         self.ivyhouse = None
         self.megafruit = None
         self.minigames = Minigames()
+        self.vacation = None
 
 
     def __init_gardens(self) -> bool:
@@ -111,6 +113,8 @@ class WurzelBot:
             if Feature().is_ivyhouse_available():
                 self.ivyhouse = Ivyhouse()
 
+            if Feature().is_vacation_available():
+                self.vacation = Vacation()
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
@@ -776,3 +780,9 @@ class WurzelBot:
     def collect_decogardens(self):
         self.decogarden1.collect()
         self.decogarden2.collect()
+
+    #Vacation
+    def check_vacation(self):
+        self.vacation.harvest_locations()
+        self.vacation.refill_locations()
+        self.vacation.check_customers()
