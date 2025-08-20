@@ -210,5 +210,7 @@ class Vacation:
                 print(f"\n\n ###BOOK location_id: {best_location}###")
                 content = self.__http.book_location(best_location, setup = setup)
                 self.__set_data(content)
+                self.__get_available_customers()
+                self.__get_available_locations()
             else:
                 print("ERROR: could book customer")
