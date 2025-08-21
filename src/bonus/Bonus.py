@@ -27,9 +27,9 @@ class Bonus:
                 plant_id = self.__note.get_bonus_plant_id()
                 if plant_id and plant_id in bonus_data['products']:
                     self.__http.set_daily_login_bonus_plant(plant_id)
-                    self.__log.info(f"Set daily login bonus plant to ID: {plant_id}")
+                    Logger.info(f"Set daily login bonus plant to ID: {plant_id}")
                 else:
-                    self.__log.error(f"Plant-ID '{plant_id}' not selectable for bonus plant!")
+                    Logger.error(f"Plant-ID '{plant_id}' not selectable for bonus plant!")
                 time.sleep(3)
 
     def collect_bonus_item_points(self) -> bool:
