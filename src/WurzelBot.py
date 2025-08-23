@@ -7,6 +7,7 @@ Created on 21.03.2017
 '''
 
 from src.biogas.Biogas import Biogas
+from src.birds.Birds import Birds
 from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
 from src.citypark.CityPark import CityPark
@@ -70,6 +71,7 @@ class WurzelBot:
         self.megafruit = None
         self.minigames = Minigames()
         self.vacation = None
+        self.birds = None
 
 
     def __init_gardens(self) -> bool:
@@ -115,6 +117,9 @@ class WurzelBot:
 
             if Feature().is_vacation_available():
                 self.vacation = Vacation()
+
+            if Feature().is_birds_available():
+                self.birds = Birds()
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
@@ -786,3 +791,9 @@ class WurzelBot:
         self.vacation.harvest_locations()
         self.vacation.refill_locations()
         self.vacation.check_customers()
+
+    #Birds
+    def check_birds(self):
+        self.birds.finish_jobs()
+        self.birds.feed_and_renew_birds()
+        self.birds.start_birds()

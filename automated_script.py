@@ -119,6 +119,8 @@ def main():
         wurzelBot.check_snailracing()
         wurzelBot.collect_decogardens()
         wurzelBot.check_vacation()
+        if wurzelBot.birds is not None:
+            wurzelBot.check_birds()
         
     finally:
         # Close connection
