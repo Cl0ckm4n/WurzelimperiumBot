@@ -49,11 +49,15 @@ class Vacation:
         content = self.__data["data"]["locations"]
         for location, data in content.items():
             slots = data.get("slots", {})
-            for slot, slotdata in slots.items():
-                slots = []
-                remain = slotdata.get("remain", 999)
-                if remain > 0: continue
-                slots.append(slot)
+            print('➡ src/vacation/Vacation.py:52 slots:', slots)
+            if slots == None:
+                slots.append(1)
+            else:
+                for slot, slotdata in slots.items():
+                    slots = []
+                    remain = slotdata.get("remain", 999)
+                    if remain > 0: continue
+                    slots.append(slot)
             print('➡ src/vacation/Vacation.py:94 slots:', slots)
             if slots:
                 self.__available_locations.append(location)
