@@ -52,6 +52,63 @@ class Birds:
         print('➡ src/birds/Birds.py:55 free_jobs:', free_jobs)
         return free_jobs
 
+    #Job nicht zugeteilt
+    """
+    id	"692158"
+    unr	"1458480"
+    slot	"5"
+    size	"1"
+    distance	"3"
+    endurance	"3"
+    products	{ 2: 2286, 59: 1 }
+    rewards	{ money: 1362, points: 1010, feather: 23, … }
+    house	"0"
+    duration	"0"
+    remove_cooldown	"0"
+    createdate	"1755676482"
+    startdate	"0"
+    finishdate	"0"
+    """
+
+    # Job fertig
+    """
+    id	"649411"
+    unr	"1458480"
+    slot	"2"
+    size	"2"
+    distance	"2"
+    endurance	"3"
+    products	{ 11: 32, 409: 1, 410: 3 }
+    rewards	{ money: 1356, points: 520, feather: 13, … }
+    house	"4"
+    duration	"14400"
+    remove_cooldown	"0"
+    createdate	"1740912679"
+    startdate	"1740912752"
+    finishdate	"0"
+        remain	-14750096
+    """
+
+    #Job running
+    """
+    id	"692159"
+    unr	"1458480"
+    slot	"6"
+    size	"2"
+    distance	"3"
+    endurance	"4"
+    products	{ 12: 1073, 36: 77, 410: 2 }
+    rewards	{ money: 2117, points: 1020, feather: 24, … }
+    house	"3"
+    duration	"28800"
+    remove_cooldown	"0"
+    createdate	"1755676602"
+    startdate	"1755677541"
+    finishdate	"0"
+        remain	28800
+    """
+
+
     def finish_jobs(self) -> None:
         for job, data in self.__jobs.items():
             remain = data.get("remain", 0)
@@ -61,7 +118,7 @@ class Birds:
                 content = self.__http.finish_job(slot=slot)
                 self.__set_data(content)
 
-    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird = 3) -> None:
+    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 3) -> None:
         for house, data in self.__houses.items():
             print('➡ src/birds/Birds.py:138 house:', house)
 
@@ -82,8 +139,8 @@ class Birds:
                         content = self.__http.feed_bird(slot=house)
                         self.__set_data(content)
             else: #no bird in house --> buy a new one #TODO: not tested
-                print(f"\n\n ###BUY bird: {bird} for house {house}###")
-                content = self.__http.buy_bird(house=house, bird_nr=bird)
+                print(f"\n\n ###BUY bird: {bird_nr} for house {house}###")
+                content = self.__http.buy_bird(house=house, bird_nr=bird_nr)
                 self.__set_data(content)
 
     def __check_feed_products(self, feed_products: dict, buy_from_shop: bool) -> bool:
