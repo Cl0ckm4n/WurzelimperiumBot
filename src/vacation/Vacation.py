@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+from src.logger.Logger import Logger
 from src.product.Product import Product
 from src.product.ProductData import ProductData
 from src.shop.Shop import Shop
@@ -25,7 +26,6 @@ class Vacation:
 
     def update(self):
         self.__set_data(self.__http.get_info())
-        self.__get_available_customers()
         self.__get_available_locations()
 
     def __set_data(self, content):
@@ -36,13 +36,6 @@ class Vacation:
 
         self.__customers = self.__data["data"]["customers"]
         self.__customers = dict(sorted(self.__customers.items(), key=lambda item: len(item[1].get('interests', []))))
-        print('\n\n➡ src/vacation/Vacation.py:63 self.__customers:', self.__customers)
-
-    def __get_available_customers(self) -> None:
-        self.__available_customers = []
-        content = self.__data["data"]["slots"]
-        for slot, data in content.items():
-            self.__available_customers.append(slot)
 
     def __get_available_locations(self) -> None:
         self.__available_locations = []
@@ -50,23 +43,27 @@ class Vacation:
         for location, data in content.items():
             slots = data.get("slots", {})
             print('➡ src/vacation/Vacation.py:52 slots:', slots)
+            slots_available = []
             if slots == None:
-                slots.append(1)
+                slots_available.append(1)
             else:
                 for slot, slotdata in slots.items():
-                    slots = []
                     remain = slotdata.get("remain", 999)
                     if remain > 0: continue
-                    slots.append(slot)
-            print('➡ src/vacation/Vacation.py:94 slots:', slots)
-            if slots:
+                    slots_available.append(slot)
+                print('➡ src/vacation/Vacation.py:62 slots_available:', slots_available)
+
+            if slots_available:
                 self.__available_locations.append(location)
                 print('➡ src/vacation/Vacation.py:97 self.__available_locations:', self.__available_locations)
+            else:
+                Logger().error("No location available")
 
     def __get_location_energy(self, location_level) -> int:
         return int(self.__data.get("config",{}).get("location_level",{}).get(str(location_level),{}).get("energy",9999))
     
     def __get_location_slots(self, location_id) -> dict:
+        #TODO: known bug: add check for slots after newly unlocking them (they are not listed in the slots data) --> check via location level
         return self.__data.get("data",{}).get("locations",{}).get(location_id,{}).get("slots",{})
     
     def __get_location_products(self, location_id) -> dict:
@@ -133,8 +130,10 @@ class Vacation:
         for customer_id, customer_data in self.__customers.items():
             print('➡ src/vacation/Vacation.py:176 customer_id:', customer_id)
             print('➡ src/vacation/Vacation.py:176 customer_data:', customer_data)
-            location = customer_data["location"]
-            if location != "0": continue #customer already on vacation
+            location = customer_data["location"] # location where customer is
+            if location != "0":
+                Logger().info(f"Skip customer {customer_id} (already in location {location})")
+                continue #customer already on vacation
 
             # check interests mit locations aus config, if location free
             possible_locations = []
@@ -163,7 +162,7 @@ class Vacation:
             print('➡ src/vacation/Vacation.py:204 best_locations:', best_locations)
             if not len(best_locations) > 0:
                 print("Error: no locations available")
-                return False
+                continue
             
             best_location = best_locations[0]
 
@@ -214,7 +213,6 @@ class Vacation:
                 print(f"\n\n ###BOOK location_id: {best_location}###")
                 content = self.__http.book_location(best_location, setup = setup)
                 self.__set_data(content)
-                self.__get_available_customers()
                 self.__get_available_locations()
             else:
                 print("ERROR: could book customer")
