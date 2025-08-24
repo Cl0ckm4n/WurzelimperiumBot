@@ -47,7 +47,7 @@ class Birds:
     def __get_free_jobs(self) -> list:
         free_jobs = []
         for job_id, job_data in self.__jobs.items():
-            if job_data.get("house", None) == "0":
+            if job_data.get("house", None) == "0" and job_data.get("remove_remain", 0) <= 0:
                 free_jobs.append(job_id)
         print('➡ src/birds/Birds.py:55 free_jobs:', free_jobs)
         return free_jobs
@@ -224,7 +224,11 @@ class Birds:
 
                 possible_jobs.update({job: job_rewards.get("xp", 0)})
             print('➡ src/birds/Birds.py:264 possible_jobs:', possible_jobs)
-            best_job = max(possible_jobs, key=possible_jobs.get)
+            if possible_jobs:
+                best_job = max(possible_jobs, key=possible_jobs.get)
+            else:
+                print(f"\n\n ### NO JOB for house {house} available ###")
+                continue
             print('\n➡ src/birds/Birds.py:265 best_job:', best_job)
             print("\n\n\n ### START JOB ###")
             content = self.__http.start_job(jobslot=best_job, house_nr=house)
