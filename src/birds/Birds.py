@@ -165,6 +165,8 @@ class Birds:
         free_houses = [x for x in self.__get_available_houses() if x not in self.__get_occupied_houses()]
         print('➡ src/birds/Birds.py:195 free_houses:', free_houses)
 
+        impossible_jobs=[]
+
         for house in free_houses:
             print('\n\n➡ src/birds/Birds.py:204 house:', house)
             house_bird_endurance = self.__get_house_bird_endurance(house)
@@ -173,9 +175,9 @@ class Birds:
             print('➡ src/birds/Birds.py:207 house_bird_load_max:', house_bird_load_max)
             
             possible_jobs={}
-            impossible_jobs=[]
             #TODO: get best job (maximize rewards?!)
             for job in self.__get_free_jobs():
+                print('\n➡ src/birds/Birds.py:242 impossible_jobs:', impossible_jobs)
                 print('➡ src/birds/Birds.py:192 job:', job)
                 job_data = self.__jobs.get(job, 0)
                 if not job_data:
@@ -192,18 +194,19 @@ class Birds:
                     continue
                 print("load ok")
 
-                if job in impossible_jobs:
-                    impossible_jobs.remove(job)
-                print('➡ src/birds/Birds.py:242 impossible_jobs:', impossible_jobs)
-
                 job_distance = job_data.get("distance", 0) #not relevant (je höher, desto mehr rewards)
                 print('➡ src/birds/Birds.py:220 job_distance:', job_distance)
 
                 job_endurance = job_data.get("endurance", 0)#str; compare with bird_endurance
                 print('➡ src/birds/Birds.py:222 job_endurance:', job_endurance)
                 if not self.__get_house_bird_endurance(house) >= int(job_endurance):
+                    if job not in impossible_jobs:
+                        impossible_jobs.append(job)
                     continue
                 print("endurance ok")
+
+                if job in impossible_jobs:
+                    impossible_jobs.remove(job)
 
                 job_products = job_data.get("products", 0)#dict; check Stock if available; if not buy
                 print('➡ src/birds/Birds.py:236 job_products:', job_products)
