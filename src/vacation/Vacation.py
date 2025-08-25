@@ -39,19 +39,17 @@ class Vacation:
 
     def __get_available_locations(self) -> None:
         self.__available_locations = []
-        content = self.__data["data"]["locations"]
-        for location, data in content.items():
-            slots = data.get("slots", {})
+        for location in self.__locations.keys():
+            slots = self.__get_location_slots(location)
             print('➡ src/vacation/Vacation.py:52 slots:', slots)
             slots_available = []
-            if slots == None:
-                slots_available.append(1)
-            else:
-                for slot, slotdata in slots.items():
-                    remain = slotdata.get("remain", 999)
-                    if remain > 0: continue
-                    slots_available.append(slot)
-                print('➡ src/vacation/Vacation.py:62 slots_available:', slots_available)
+            if not slots:
+                continue
+            for slot, slotdata in slots.items():
+                remain = slotdata.get("remain", 999)
+                if remain > 0: continue
+                slots_available.append(slot)
+            print('➡ src/vacation/Vacation.py:62 slots_available:', slots_available)
 
             if slots_available:
                 self.__available_locations.append(location)
@@ -63,8 +61,35 @@ class Vacation:
         return int(self.__data.get("config",{}).get("location_level",{}).get(str(location_level),{}).get("energy",9999))
     
     def __get_location_slots(self, location_id) -> dict:
-        #TODO: known bug: add check for slots after newly unlocking them (they are not listed in the slots data) --> check via location level
-        return self.__data.get("data",{}).get("locations",{}).get(location_id,{}).get("slots",{})
+        slots = self.__data.get("data",{}).get("locations",{}).get(location_id,{}).get("slots",{})
+        print('➡ src/vacation/Vacation.py:78 slots:', slots)
+        level = self.__get_location_level(location_id)
+        print('➡ src/vacation/Vacation.py:79 level:', level)
+        slots_count = len(slots.keys())
+        print('➡ src/vacation/Vacation.py:80 slots_count:', slots_count)
+
+        if level == 1 and slots_count == 0:
+            slots.update({1: {"remain": -1}})
+
+        if level == 2 and slots_count == 0:
+            slots.update({1: {"remain": -1}})
+            slots.update({2: {"remain": -1}})
+        if level == 2 and slots_count == 1:
+            slots.update({2: {"remain": -1}})
+
+        if level >= 3 and slots_count == 0:
+            slots.update({1: {"remain": -1}})
+            slots.update({2: {"remain": -1}})
+            slots.update({3: {"remain": -1}})
+        if level >= 3 and slots_count == 1:
+            slots.update({2: {"remain": -1}})
+            slots.update({3: {"remain": -1}})
+        if level >= 3 and slots_count == 2:
+            slots.update({3: {"remain": -1}})
+
+        print('➡ src/vacation/Vacation.py:102 slots:', slots)
+        return slots
+        
     
     def __get_location_products(self, location_id) -> dict:
         return self.__data.get("config",{}).get("location",{}).get(location_id,{}).get("products",{})
@@ -78,15 +103,20 @@ class Vacation:
     
     def __get_location_name(self, location_id) -> str:
         return self.__data.get("config",{}).get("location",{}).get(location_id,{}).get("name",{})
+    
+    def __get_location_level(self, location_id) -> str:
+        return self.__data.get("data",{}).get("locations",{}).get(location_id,{}).get("level",{}).get("level",0)
 
     def harvest_locations(self) -> None:
-        for location_id, data in self.__locations.items():
+        for location_id in self.__locations.keys():
             print('➡ src/vacation/Vacation.py:82 location_id:', location_id)
-            slots = data.get("slots", {})
+            slots = self.__get_location_slots(location_id)
             for slot, slotdata in slots.items():
                 remain = slotdata.get("remain", 999)
                 print('➡ src/vacation/Vacation.py:136 remain:', remain)
-                if -1000000 < remain < 0:
+                customerid = slotdata.get("customerid", 0)
+                print('➡ src/vacation/Vacation.py:129 customerid:', customerid)
+                if remain < 0 and customerid:
                     print(f"\n\n ###HARVEST location_id: {location_id} slot: {slot}###")
                     content = self.__http.harvest_location_slot(id = location_id, slot = slot)
                     self.__set_data(content)
@@ -127,10 +157,12 @@ class Vacation:
 
 
     def check_customers(self, item_name="toiletry_bag"):
+        print(f"PROCESS CUSTOMERS: {self.__customers}")
         for customer_id, customer_data in self.__customers.items():
             print('➡ src/vacation/Vacation.py:176 customer_id:', customer_id)
             print('➡ src/vacation/Vacation.py:176 customer_data:', customer_data)
             location = customer_data["location"] # location where customer is
+            print('➡ src/vacation/Vacation.py:135 location:', location)
             if location != "0":
                 Logger().info(f"Skip customer {customer_id} (already in location {location})")
                 continue #customer already on vacation
@@ -140,7 +172,9 @@ class Vacation:
             interests = customer_data["interests"]
             print('➡ src/vacation/Vacation.py:188 self.__available_locations:', self.__available_locations)
             for location in self.__available_locations:
+                print('➡ src/vacation/Vacation.py:146 location:', location)
                 location_interests = self.__get_location_interests(location)
+                print('➡ src/vacation/Vacation.py:147 location_interests:', location_interests)
                 if any(item in interests for item in location_interests):
                     possible_locations.append(location)
                     print('➡ src/vacation/Vacation.py:195 possible_locations:', possible_locations)
