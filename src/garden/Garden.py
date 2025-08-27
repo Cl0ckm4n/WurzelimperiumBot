@@ -19,7 +19,7 @@ class Garden:
 
     def __init__(self, gardenID):
         self._id = gardenID
-        self.__http = Http()
+        self.http = Http()
         self._user = User()
 
     def _getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
@@ -110,17 +110,17 @@ class Garden:
         Logger().info(f'Gieße alle Pflanzen im Garten {self._id}.')
         #BG- Полей всички растения в градината. {self._id}.
 
-        plants = self.__http.get_plants_to_water(self._id)
+        plants = self.http.get_plants_to_water(self._id)
         if plants is None:
             return False
         nPlants = len(plants['fieldID'])
         if nPlants and self._user.has_watering_gnome_helper():
-            if not self.__http.water_all_plants():
+            if not self.http.water_all_plants():
                 return False
         else:
             for i in range(0, nPlants):
                 sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                if not self.__http.water_plant(self._id, plants['fieldID'][i], sFields):
+                if not self.http.water_plant(self._id, plants['fieldID'][i], sFields):
                     return False
 
         Logger().print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
@@ -130,21 +130,21 @@ class Garden:
     def get_empty_fields(self):
         """Returns all empty fields in the garden."""
         #BG- """Връща всички празни полета в градината."""
-        return self.__http.get_empty_fields(self._id) or []
+        return self.http.get_empty_fields(self._id) or []
 
     def get_growing_fields(self):
         """Returns all grown fields in the garden."""
-        return self.__http.get_empty_fields(self._id, param="growing") or []
+        return self.http.get_empty_fields(self._id, param="growing") or []
 
     def get_weed_fields(self):
         """Returns all weed fields in the garden."""
         #BG- """Връща всички полета с плевели в градината."""
-        return self.__http.get_weed_fields(self._id) or {}
+        return self.http.get_weed_fields(self._id) or {}
 
     def getGrowingPlants(self):
         """Returns all growing plants in the garden."""
         #BG- """Връща всички растящи растения в градината."""
-        return Counter(self.__http.get_growing_plants(self._id) or [])
+        return Counter(self.http.get_growing_plants(self._id) or [])
 
     def getNextWaterHarvest(self):
         """Returns all growing plants in the garden."""
@@ -153,7 +153,7 @@ class Garden:
         overall_time = []
         Fields_data = namedtuple("Fields_data", "plant water harvest")
         max_water_time = 86400
-        garden = self.__http.change_garden(self._id)
+        garden = self.http.change_garden(self._id)
         if garden is None:
             return None
         garden = garden.get('garden')
@@ -169,7 +169,7 @@ class Garden:
     def harvest(self) -> bool:
         """Harvest everything"""
         #BG- """Събери всичко."""
-        return self.__http.harvest(self._id)
+        return self.http.harvest(self._id)
 
     def harvest_unfinished(self) -> bool:
         #BG- """Отглежда растение от всякакъв размер."""
@@ -187,7 +187,7 @@ class Garden:
             fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
             if fields is None:
                 return False
-            if not self.__http.harvest_unfinished(plant_id, field, fields):
+            if not self.http.harvest_unfinished(plant_id, field, fields):
                 return False
 
         return True
@@ -220,7 +220,7 @@ class Garden:
             
             if len(to_plant) == self._PLANT_PER_REQUEST or len(to_plant) + planted == amount \
             or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                if self.__http.grow(to_plant, plantID, self._id) is None:
+                if self.http.grow(to_plant, plantID, self._id) is None:
                     return None
                 planted += len(to_plant)
                 to_plant = {}
@@ -240,7 +240,7 @@ class Garden:
         #BG- Премахва всички плевели, камъни и кърлежи, ако има достатъчно пари.
 
         # Load details for all fields of this garden
-        garden = self.__http.change_garden(self._id)
+        garden = self.http.change_garden(self._id)
         if garden is None:
             return False
         garden = garden.get('garden')
@@ -264,7 +264,7 @@ class Garden:
             money -= cost_for_removal
 
             # Remove weed on field
-            result = self.__http.remove_weed_on_field(self._id, fieldID)
+            result = self.http.remove_weed_on_field(self._id, fieldID)
             if result is None:
                 Logger().print_error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
                 #BG- Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!
@@ -285,7 +285,7 @@ class Garden:
         return True
 
     def get_fields(self):
-        return self.__http.get_empty_fields(self._id, '')['garden']
+        return self.http.get_empty_fields(self._id, '')['garden']
 
     def get_booster_fields(self):
         fields = {}

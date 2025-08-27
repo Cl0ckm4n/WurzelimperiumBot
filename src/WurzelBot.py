@@ -752,7 +752,7 @@ class WurzelBot:
                 if not buy_from_shop:
                     return False
 
-                if self.buy_from_shop(int(plant_id), min_stock) == -1:
+                if self.shop.buy(int(plant_id), min_stock) == -1:
                     return False
 
             if not self.megafruit.start(mushroom):
