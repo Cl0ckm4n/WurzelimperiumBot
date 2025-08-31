@@ -62,6 +62,11 @@ def main():
         print(i18n.t('wimpb.claim_bonus'))
         wurzelBot.get_daily_bonuses()
 
+        # Play minigames
+        Logger().print('')
+        Logger().print('Playing minigames...')
+        wurzelBot.minigames.play(allowed_events = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'fair', 'pumpkin_digging'])
+
         # Check Herbgarden
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()
