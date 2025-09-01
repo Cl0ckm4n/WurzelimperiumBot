@@ -100,7 +100,7 @@ def main():
         # Play minigames
         Logger().print('')
         Logger().print('Playing minigames...')
-        wurzelBot.minigames.play(allowed_events = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'fair', 'pumpkin_digging'])
+        wurzelBot.minigames.play(allowed_events = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'fair'])
 
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
