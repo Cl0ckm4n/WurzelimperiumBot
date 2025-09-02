@@ -65,6 +65,7 @@ class Vacation:
         print('➡ src/vacation/Vacation.py:78 slots:', slots)
         level = self.__get_location_level(location_id)
         print('➡ src/vacation/Vacation.py:79 level:', level)
+        if slots == None: slots = {}
         slots_count = len(slots.keys())
         print('➡ src/vacation/Vacation.py:80 slots_count:', slots_count)
 
