@@ -105,7 +105,7 @@ class Vacation:
     def __get_location_name(self, location_id) -> str:
         return self.__data.get("config",{}).get("location",{}).get(location_id,{}).get("name",{})
     
-    def __get_location_level(self, location_id) -> str:
+    def __get_location_level(self, location_id) -> int:
         return self.__data.get("data",{}).get("locations",{}).get(location_id,{}).get("level",{}).get("level",0)
 
     def harvest_locations(self) -> None:
@@ -242,6 +242,10 @@ class Vacation:
             # setup: {"customerid":31485,"slot":"1","items":{"1":15141,"2":15144,"3":15143}}
             if book_slot:
                 setup=f'{{"customerid":{customer_id},"slot":"{book_slot}","items":{{"1":{item1_id},"2":{item2_id},"3":{item3_id}}}}}'
+                if self.__get_location_level(best_location) == 1:
+                    setup=f'{{"customerid":{customer_id},"slot":"{book_slot}","items":{{"1":{item1_id}}}}}'
+                if self.__get_location_level(best_location) == 2:
+                    setup=f'{{"customerid":{customer_id},"slot":"{book_slot}","items":{{"1":{item1_id},"2":{item2_id}}}}}'
                 print('➡ src/vacation/Vacation.py:279 setup:', setup)
                 
                 # book location
