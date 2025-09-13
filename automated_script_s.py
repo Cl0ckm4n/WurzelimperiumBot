@@ -71,6 +71,8 @@ def main():
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()
 
+        wurzelBot.check_park()
+
     finally:
         # Close connection
         # BG-Затваряне на връзката
