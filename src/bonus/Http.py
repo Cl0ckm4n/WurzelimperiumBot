@@ -18,17 +18,18 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception("Failed to get dialy login bonus")
+            Logger().print_exception("Failed to get daily login bonus")
             return None
 
     def set_daily_login_bonus_plant(self, plant_id):
         try:
             address = f'ajax/ajax.php?do=dailyloginbonus_setplant&pid={plant_id}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
-        except:
-            pass
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception("Failed to set daily login bonus plant on day 7")
+            return None
 
     def read_user_data(self):
         return self.__httpUser.load_data("dailyloginbonus")['dailyloginbonus']
