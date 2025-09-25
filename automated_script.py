@@ -4,7 +4,7 @@
 import argparse
 import time
 import i18n
-from src.bonsai.ShopProduct import CYPRESS
+from src.bonsai.ShopProduct import CYPRESS, OAK
 from src.core.Config import Config
 from src.logger.Logger import Logger
 from src.megafruit.Megafruit import Mushroom
@@ -106,7 +106,7 @@ def main():
         if wurzelBot.bonsaifarm is not None:
             Logger().print('')
             Logger().print('Cutting bonsais...')
-            wurzelBot.cut_and_renew_bonsais(finish_level=6, bonsai=CYPRESS, allowed_prices=['money']) #TODO: adjust level
+            wurzelBot.cut_and_renew_bonsais(finish_level=8, bonsai=OAK, allowed_prices=['money', 'zen_points']) #TODO: adjust level
 
         # Taking care of megafruit
         if wurzelBot.megafruit is not None:
