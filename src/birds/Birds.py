@@ -118,7 +118,7 @@ class Birds:
                 content = self.__http.finish_job(slot=slot)
                 self.__set_data(content)
 
-    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 3) -> None:
+    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 5) -> None:
         for house, data in self.__houses.items():
             print('➡ src/birds/Birds.py:138 house:', house)
 
