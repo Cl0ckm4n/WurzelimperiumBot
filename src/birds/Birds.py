@@ -6,7 +6,9 @@ from src.product.ProductData import ProductData
 from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from src.birds.Http import Http
+from src.logger.Logger import Logger
 
+import math
 
 class Birds:
     """Wrapper for the Birds"""
@@ -25,6 +27,7 @@ class Birds:
         self.__data = content.get("data", None)
         self.__houses = self.__data["data"]["houses"]
         self.__jobs = self.__data["data"]["jobs"]
+        self.__contest = self.__data["contest"]
 
     def __get_house_bird_endurance(self, house):
         return self.__houses.get(house, {}).get("bird", {}).get("endurance", 0)
@@ -41,7 +44,6 @@ class Birds:
             house = job_data.get("house", None)
             if not job_data.get("house", None) == "0":
                 occupied_houses.append(house)
-        print('➡ src/birds/Birds.py:46 occupied_houses:', occupied_houses)
         return occupied_houses
     
     def __get_free_jobs(self) -> list:
@@ -121,18 +123,18 @@ class Birds:
     def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 5) -> None:
         for house, data in self.__houses.items():
             print('➡ src/birds/Birds.py:138 house:', house)
-
             if house in self.__get_occupied_houses():
                 continue
+            print(self.__get_occupied_houses())
             bird = data.get("bird", 0)
             print('➡ src/birds/Birds.py:150 bird:', bird)
             if bird: #bird in house, check if feeding necessary
                 feed_products = bird.get("feed", {})
-                print('➡ src/birds/Birds.py:155 feed_products:', feed_products)
+                # print('➡ src/birds/Birds.py:155 feed_products:', feed_products)
                 endurance = bird.get("endurance", 0)
-                print('➡ src/birds/Birds.py:157 endurance:', endurance)
+                # print('➡ src/birds/Birds.py:157 endurance:', endurance)
                 endurance_max = bird.get("endurance_max", 0)
-                print('➡ src/birds/Birds.py:159 endurance_max:', endurance_max)
+                # print('➡ src/birds/Birds.py:159 endurance_max:', endurance_max)
                 if endurance < endurance_max:
                     if self.__check_feed_products(feed_products, buy_from_shop):
                         print(f"\n\n ###FEED house: {house}###")
@@ -223,6 +225,7 @@ class Birds:
                 print('➡ src/birds/Birds.py:238 job_rewards:', job_rewards)
 
                 possible_jobs.update({job: job_rewards.get("xp", 0)})
+
             print('➡ src/birds/Birds.py:264 possible_jobs:', possible_jobs)
             if possible_jobs:
                 best_job = max(possible_jobs, key=possible_jobs.get)
@@ -235,6 +238,53 @@ class Birds:
             self.__set_data(content)
 
         for job in impossible_jobs:
-            print(f"\n\n\n ### REMOVE JOB {job} ###")
+            print(f"\n\n\n ### REMOVE IMPOSSIBLE JOB {job} ###")
             content = self.__http.remove_job(slot=job)
             self.__set_data(content)
+
+    def check_contest(self, buy_from_shop = True): #TODO: available ab Vogelpost-Level 3
+        #check if contest available
+        if '10' in self.__jobs.keys():
+            Logger().debug(f'➡ src/birds/Birds.py:246 self.__jobs: {self.__jobs}')
+            Logger().info("### CONTEST STILL ACTIVE ###")
+            return False
+        
+        # select free house/bird #TODO: endurance >= 3
+        free_houses = [x for x in self.__get_available_houses() if x not in self.__get_occupied_houses()]
+        Logger().debug(f'➡ src/birds/Birds.py:195 free_houses: {free_houses}')
+        house = free_houses[0]
+        Logger().debug(f'➡ src/birds/Birds.py:250 house: {house}')
+        if not house: return False
+
+        # select (boosted) products and start bird/contest
+        boosted_products = self.__contest.get("booster", None) #list
+        last_entry = self.__contest.get("entry", {}).get("products", {})# dict with pid: amount
+        last_entry = {int(k):int(v) for k,v in last_entry.items()} #convert str to int
+        last_entry_products = list(last_entry.keys()) #convert dict to list
+        Logger().debug(f'➡ src/birds/Birds.py:269 last_entry_products: {last_entry_products}')
+        boosted_products_available = [x for x in boosted_products if x not in last_entry]
+        Logger().debug(f'➡ src/birds/Birds.py:273 boosted_products_available: {boosted_products_available}')
+
+        products = {"1":{},"2":{},"3":{}}#{"1":{"pid":17,"amount":5},"2":{"pid":32,"amount":71},"3":{"pid":35,"amount":53}}
+        job_products = boosted_products_available[:3] #select first 3 boosted products
+        Logger().debug(f'➡ src/birds/Birds.py:276 job_products: {job_products}')
+        counter=1
+        load_max = self.__get_house_bird_load_max(house)*200
+        Logger().debug(f'➡ src/birds/Birds.py:285 load_max: {load_max}')
+
+        for pid in job_products:
+            product: Product = ProductData().get_product_by_id(pid)
+            price = product.get_price_npc()
+            amount = math.ceil(load_max/3/price)
+            if self.__stock.get_stock_by_product_id(pid) < amount:
+                if buy_from_shop:
+                    self.__shop.buy(product_name=pid, amount=amount)
+                else:
+                    Logger().error("### BUYING IN SHOP DISABLED")
+                    return False
+            products.update({f"{counter}": {"pid": pid, "amount": amount}})
+            Logger().debug(f'➡ src/birds/Birds.py:290 products: {products}')
+            counter=counter+1
+        Logger().info("\n\n\n ### START CONTEST ###")
+        content = self.__http.start_contest(house, products)
+        self.__set_data(content)

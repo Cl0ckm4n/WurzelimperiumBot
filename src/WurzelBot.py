@@ -796,4 +796,5 @@ class WurzelBot:
     def check_birds(self):
         self.birds.finish_jobs()
         self.birds.feed_and_renew_birds()
+        self.birds.check_contest()
         self.birds.start_birds()

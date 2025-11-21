@@ -56,7 +56,7 @@ class Http(object):
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception(f'Failed to finish job in slot {slot}')
+            Logger().print_exception(f'\n\nFailed to finish job in slot {slot}')
             return None
         
     def remove_job(self, slot):
@@ -75,11 +75,22 @@ class Http(object):
     def buy_bird(self, house, bird_nr):
         #slot bleibt leer wenn direkt im shop gekauft
         address = f'ajax/ajax.php?do=birds_buy_bird&slot={house}&bird={bird_nr}&token={self.__http.token()}'
-        print('➡ src/vacation/Http.py:56 address:', address)
         try:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
             Logger().print_exception(f'Failed to buy bird {bird_nr} for house {house}')
+            return None
+        
+    def start_contest(self, house_nr, products):
+        address = f'ajax/ajax.php?do=birds_contest_send&data={{"house":{house_nr},"slots":{products}}}&token={self.__http.token()}'
+        address = address.replace("'", '"')
+        print('➡ src/birds/Http.py:90 address:', address)
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception(f'Failed to start contest for house {house_nr}')
             return None
