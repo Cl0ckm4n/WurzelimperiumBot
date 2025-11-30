@@ -47,11 +47,16 @@ def main():
         wurzelBot.harvest()
 
         # Plant plants
-        wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_1())
-        wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_2())
-        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_1())
-        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_2())
-        wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_edge())
+        if wurzelBot.note.get_garden_plant_1():
+            wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_1())
+        if wurzelBot.note.get_garden_plant_2():
+            wurzelBot.growVegetablesInGardens(wurzelBot.note.get_garden_plant_2())
+        if wurzelBot.note.get_watergarden_plant_1():
+            wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_1())
+        if wurzelBot.note.get_watergarden_plant_2():
+            wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_2())
+        if wurzelBot.note.get_watergarden_plant_edge():
+            wurzelBot.growPlantsInAquaGardens(wurzelBot.note.get_watergarden_plant_edge())
 
         # Water plants
         time.sleep(3)
