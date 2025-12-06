@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.core.User import User
 from src.bonus.Http import Http
 from src.guild.Http import Http as HttpGuild
 from src.logger.Logger import Logger
@@ -35,14 +36,28 @@ class Bonus:
     def collect_bonus_item_points(self) -> bool:
         if not self.__http.init_garden_shed():
             return False
-        if not self.__http.open_trophy_case():
+        if not self.__http.open_trophy_case(category="paymentitemcollection"):
             return False
-        content = self.__http.collect_bonus_items()
-        if content is None:
-            return False
-        claim_msg = content['msg'].replace('<br>', '')
-        already_claimed_msg = content['message']
-        Logger().print(f"{claim_msg}{already_claimed_msg}")
+        content = self.__http.collect_figurines()
+        claim_msg = "FIGURINES: "
+        if content.get("data"):
+            claim_msg = claim_msg + content.get("data", {}).get("reward_points", "-0")
+            claim_msg = claim_msg + " points\n"
+        else:
+            claim_msg = claim_msg + "already collected today.\n"
+        if User().is_premium_active():
+            if not self.__http.open_trophy_case(category="giver"):
+                return False
+            content = self.__http.collect_bonus_items()
+            if content is None:
+                return False
+            claim_msg = claim_msg + "BONUSITEMS: "
+            if content.get('message'):
+                claim_msg = claim_msg + content.get('message', "")
+            else:
+                claim_msg = claim_msg + content.get('msg', "0").replace('<br>', '')
+                claim_msg = claim_msg + " points\n"
+            Logger().print(f"{claim_msg}")
         return True
 
     def collect_lucky_mole(self) -> bool:

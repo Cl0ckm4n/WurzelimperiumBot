@@ -44,9 +44,10 @@ class Http:
             Logger().print_exception("Failed to init garden shed")
             return False
 
-    def open_trophy_case(self) -> bool:
+    def open_trophy_case(self, category) -> bool:
+        """category: giver, paymentitemcollection"""
         try:
-            response, content = self.__http.send('ajax/gettrophies.php?category=giver')
+            response, content = self.__http.send(f'ajax/gettrophies.php?category={category}')
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
             return True
@@ -56,9 +57,17 @@ class Http:
 
     def collect_bonus_items(self):
         try:
-            response, content = self.__http.send('ajax/presentclick.php', 'POST')
+            response, content = self.__http.send(f'ajax/presentclick.php', 'POST')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
             Logger().print_exception("Failed to collect bonus items")
-            return None
+
+    def collect_figurines(self):
+        try:
+            response, content = self.__http.send(f'ajax/ajax.php?do=paymentcollection_collect&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception("Failed to collect figurines")
+            return False
