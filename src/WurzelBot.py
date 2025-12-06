@@ -479,6 +479,11 @@ class WurzelBot:
             return 0
 
         planted = 0
+
+        if productName is None:
+            logMsg = f'Plant "{productName}" not found'
+            return -1
+
         product = ProductData().get_product_by_name(productName)
         if product is None:
             Logger().print_error(f'Plant "{productName}" not found')
