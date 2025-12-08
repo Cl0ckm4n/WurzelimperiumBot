@@ -4,6 +4,8 @@
 from collections import Counter
 from src.core.HTTPCommunication import HTTPConnection
 from src.logger.Logger import Logger
+from src.product.Product import Product
+from src.product.ProductData import ProductData
 from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
 import json, re, time
 
@@ -251,6 +253,10 @@ class Http:
             splittedPlantSize = str(plantSize).split('x')
             sx = splittedPlantSize[0]
             sy = splittedPlantSize[1]
+
+            plant: Product = ProductData().get_product_by_id(jContent['garden'][str(plantedFieldID)][0])
+            if not plant.is_vegetable():
+                continue
 
             if not self.is_field_watered(jContent, plantedFieldID):
                 fieldIDToBeWatered = plantedFieldID
