@@ -65,24 +65,23 @@ class AquaGarden(Garden):
         return self.__httpAqua.get_empty_fields()
 
     def water(self) -> bool:
-        try:
-            plants = self.__httpAqua.get_plants_to_water()
-            if plants is None:
+        plants = self.__httpAqua.get_plants_to_water()
+        if plants is None:
+            return False
+        nPlants = len(plants['fieldID'])
+        if nPlants and self._user.has_watering_gnome_helper():
+            if not self.__httpAqua.water_all_plants():
                 return False
-            nPlants = len(plants['fieldID'])
-            if nPlants and self._user.has_watering_gnome_helper():
-                return self.__httpAqua.water_all_plants()
-
+        else:
             for i in range(0, nPlants):
                 sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
                 if sFields is None:
                     return False
                 if not self.__httpAqua.water_plants(sFields):
                     return False
-            return True
-        finally:
-            Logger().info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-            #BG- Във водната градина бяха поляти {nPlants} растения.
+        Logger().info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
+        #BG- Във водната градина бяха поляти {nPlants} растения.
+        return True
 
     def harvest(self) -> bool:
         """Erntet alles im Wassergarten."""

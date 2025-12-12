@@ -255,7 +255,7 @@ class Http:
             sy = splittedPlantSize[1]
 
             plant: Product = ProductData().get_product_by_id(jContent['garden'][str(plantedFieldID)][0])
-            if not plant.is_vegetable():
+            if not (plant.is_vegetable() or plant.is_water_plant()):
                 continue
 
             if not self.is_field_watered(jContent, plantedFieldID):
