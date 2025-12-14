@@ -49,7 +49,11 @@ class Http:
         try:
             response, content = self.__http.send(f'ajax/gettrophies.php?category={category}')
             self.__http.check_http_state_ok(response)
-            self.__http.get_json_and_check_for_ok(content)
+            content = self.__http.get_json_and_check_for_ok(content)
+            if category == "paymentitemcollection":
+                bonustoday = content.get("paymentcollection", {}).get("data", {}).get("bonustoday", 0)
+                if not bonustoday:
+                    return False
             return True
         except Exception:
             Logger().print_exception("Failed to open trophy case")

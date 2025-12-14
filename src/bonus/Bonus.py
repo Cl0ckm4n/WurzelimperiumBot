@@ -36,22 +36,16 @@ class Bonus:
     def collect_bonus_item_points(self) -> bool:
         if not self.__http.init_garden_shed():
             return False
-        if not self.__http.open_trophy_case(category="paymentitemcollection"):
-            return False
-        content = self.__http.collect_figurines()
-        claim_msg = "FIGURINES: "
-        if content.get("data"):
-            claim_msg = claim_msg + content.get("data", {}).get("reward_points", "-0")
-            claim_msg = claim_msg + " points\n"
-        else:
-            claim_msg = claim_msg + "already collected today.\n"
+        
+        self.__collect_figurines()
+
         if User().is_premium_active():
             if not self.__http.open_trophy_case(category="giver"):
                 return False
             content = self.__http.collect_bonus_items()
             if content is None:
                 return False
-            claim_msg = claim_msg + "BONUSITEMS: "
+            claim_msg = "BONUSITEMS: "
             if content.get('message'):
                 claim_msg = claim_msg + content.get('message', "")
             else:
@@ -59,6 +53,26 @@ class Bonus:
                 claim_msg = claim_msg + " points\n"
             Logger().print(f"{claim_msg}")
         return True
+
+    def __collect_figurines(self) -> bool:
+        claim_msg = "FIGURINES: "
+        if not self.__http.open_trophy_case(category="paymentitemcollection"):
+            claim_msg = claim_msg + "already collected today.\n"
+            Logger().print(f"{claim_msg}")
+            return False
+
+        content = self.__http.collect_figurines()
+        if not content.get("data", 0):
+            claim_msg = claim_msg + "failed to collect figurines!"
+            Logger().print(f"{claim_msg}")
+            return False
+        
+        reward_points = str(content.get("data", {}).get("reward_points", "-0"))
+        claim_msg = claim_msg + reward_points
+        claim_msg = claim_msg + " points\n"
+        Logger().print(f"{claim_msg}")
+        return True
+            
 
     def collect_lucky_mole(self) -> bool:
         content = self.__httpGuild.init_guild()

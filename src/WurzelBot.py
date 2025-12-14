@@ -620,8 +620,7 @@ class WurzelBot:
     def get_daily_bonuses(self) -> bool:
         self.bonus.get_daily_login_bonus()
 
-        if User().is_premium_active():
-            self.bonus.collect_bonus_item_points()
+        self.bonus.collect_bonus_item_points()
 
         if User().is_guild_member():
             if not self.bonus.collect_lucky_mole():
