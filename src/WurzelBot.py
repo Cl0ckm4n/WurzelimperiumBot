@@ -551,7 +551,8 @@ class WurzelBot:
         lowestProductId = -1
         for productID in Stock().get_ordered_stock_list():
             if not ProductData().get_product_by_id(productID).is_vegetable() or \
-                not ProductData().get_product_by_id(productID).is_plantable():
+                not ProductData().get_product_by_id(productID).is_plantable() or \
+                ProductData().get_product_by_id(productID).get_level() > User().get_level():
                 continue
 
             currentStock = Stock().get_stock_by_product_id(productID)
@@ -609,10 +610,13 @@ class WurzelBot:
 
     def remove_weeds(self) -> bool:
         """Removes weeds/moles/stones from all gardens"""
-        #TODO: Add aqua garden
         garden: Garden
         for garden in self.gardens:
             if not garden.remove_weeds():
+                Logger().print_error(i18n.t('wimpb.w_harvest_not_successful'))
+                return False
+        if self.aquagarden:
+            if not self.aquagarden.remove_weeds():
                 Logger().print_error(i18n.t('wimpb.w_harvest_not_successful'))
                 return False
         Logger().print(i18n.t('wimpb.w_harvest_successful'))

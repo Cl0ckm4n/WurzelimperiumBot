@@ -19,6 +19,7 @@ class User:
         self.__http = Http()
         self.__data = None
         self.__number_of_gardens = None
+        self.__aquagarden_quest = None
         self.__user_id = None
         self.__is_mail_confirmed = None
         self.__has_watering_gnome_helper = None
@@ -35,6 +36,10 @@ class User:
 
             self.__number_of_gardens = self.get_stats("Gardens")
             if self.__number_of_gardens is None:
+                return False
+            
+            self.__aquagarden_quest = self.get_stats("AquagardenQuest")
+            if self.__aquagarden_quest is None:
                 return False
 
             self.__user_id = self.__http.user_id()
@@ -91,6 +96,9 @@ class User:
 
     def get_number_of_gardens(self) -> int:
         return self.__number_of_gardens
+    
+    def get_aquagarden_quest(self) -> int:
+        return self.__aquagarden_quest
 
     def is_mail_confirmed(self) -> bool:
         return self.__is_mail_confirmed

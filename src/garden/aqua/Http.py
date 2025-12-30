@@ -4,12 +4,24 @@
 from src.core.HTTPCommunication import HTTPConnection
 from src.garden.Http import Http as HttpGarden
 from src.logger.Logger import Logger
+from src.product.Products import OLD_ROOT, DUCKWEED, GREAT_DIVING_BEATLE
 import json, re
 
 class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
         self.__httpGarden = HttpGarden()
+
+    def init_garden(self):
+        try:
+            address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
+            return jContent
+        except Exception:
+            Logger().print_exception('Failed to open water garden')
+            return None
 
     def get_empty_fields(self):
         try:
@@ -98,3 +110,41 @@ class Http:
         except Exception:
             Logger().print_exception('Failed to grow in water garden')
             return None
+        
+    def remove_weed_on_field(self, fieldID): #TODO:
+        """Befreit ein Feld im Garten von Unkraut."""
+        address = f"ajax/ajax.php?do=watergardenRemoveWeed&pos={fieldID}&token={self.__http.token()}"
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
+            return 1
+        except Exception:
+            Logger().print_exception(f'Failed to remove weed from field {fieldID} in aquagarden')
+            return None
+        
+    def get_weed_fields(self):
+        """Gibt alle Unkraut-Felder eines Gartens zurück."""
+        try:
+            address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
+            return self.__find_weed_fields_in_json(jContent)
+        except Exception:
+            Logger().print_exception('Failed to get weed fields in aquagarden')
+            return None
+
+    def __find_weed_fields_in_json(self, jContent):
+        """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
+        weedFields = {}
+        
+        for field in jContent['garden']:
+            if jContent['garden'][field][0] in [OLD_ROOT, DUCKWEED, GREAT_DIVING_BEATLE]:
+                weedFields[int(field)] = float(jContent['garden'][field][6])
+
+        #Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(weedFields) > 0:
+            weedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
+
+        return weedFields

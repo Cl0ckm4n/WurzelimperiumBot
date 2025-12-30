@@ -85,6 +85,10 @@ BASIL = 70 # DE: Basilikum
 ORANGE = 71 # DE: Orange
 COCOA = 72 # DE: Kakao
 
+OLD_ROOT = 177 # DE: alte Wurzel
+DUCKWEED = 178 # DE: Wasserlinse
+GREAT_DIVING_BEATLE = 179 # DE: Gelbrandkäfer
+
 BEAN = 181 # DE: Bohne
 
 FIELD_MINT = 225 # DE: Ackerminze
