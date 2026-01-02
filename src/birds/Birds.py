@@ -189,8 +189,20 @@ class Birds:
                 print('➡ src/birds/Birds.py:195 job_data:', job_data)
                 job_size = job_data.get("size", 0) #str; size --> load --> load_max of bird
                 print('➡ src/birds/Birds.py:216 job_size:', job_size)
+                load = 999
+                match job_size:
+                    case "1":
+                        load = 1
+                    case "2":
+                        load = 2
+                    case "3":
+                        load = 4
+                    case "4":
+                        load = 6
+                    case "5":
+                        load = 8
                 print('➡ src/birds/Birds.py:234 self.__get_house_bird_load_max():', self.__get_house_bird_load_max(house))
-                if not self.__get_house_bird_load_max(house) >= int(job_size):
+                if not self.__get_house_bird_load_max(house) >= load:
                     if job not in impossible_jobs:
                         impossible_jobs.append(job)
                     continue
