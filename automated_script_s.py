@@ -82,6 +82,11 @@ def main():
 
         wurzelBot.check_park()
 
+        # Cut bonsais
+        if wurzelBot.bonsaifarm is not None:
+            Logger().print('\nCutting bonsais...')
+            wurzelBot.cut_and_renew_bonsais(finish_level=3, allowed_prices=['money']) #TODO: adjust level to max
+
     finally:
         # Close connection
         # BG-Затваряне на връзката
