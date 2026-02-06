@@ -48,7 +48,7 @@ class AquaGarden(Garden):
         if aqua_quest < 60:
             self.__fields_available = [item for item in self.__fields_available if item not in AREA4]
 
-    def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, edge):
+    def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, edge, sx):
         """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
         #BG- """Проверява чрез няколко критерия дали е възможно засаждане."""
 
@@ -71,6 +71,15 @@ class AquaGarden(Garden):
         if edge == 0:
             if not [x for x in fieldsToPlant if x in self._INNER_FIELDS] == fieldsToPlant: return False
 
+
+        # Anpflanzen darf nicht außerhalb des Gartens erfolgen
+        # Dabei reicht die Betrachtung in x-Richtung, da hier ein
+        # "Zeilenumbruch" stattfindet. Die y-Richtung ist durch die
+        # Abfrage abgedeckt, ob alle benötigten Felder frei sind.
+        # Felder außerhalb (in y-Richtung) des Gartens sind nicht leer,
+        # da sie nicht existieren.
+
+        if not ((self._MAX_FIELDS - fieldID)%self._LEN_X >= sx - 1): return False
         fieldsToPlantSet = set(fieldsToPlant)
         emptyFieldsSet = set(emptyFields)
 

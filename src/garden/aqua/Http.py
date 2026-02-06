@@ -97,7 +97,6 @@ class Http:
 
     def grow(self, to_plant, plant_id):
         """Baut eine Pflanze im Wassergarten an."""
-        # address = f'ajax/ajax.php?do=watergardenCache&plant[{plant_id}]={field}&token={self.__token}' # TODO:
         address = f'ajax/ajax.php?do=watergardenCache'
         for field in to_plant.keys():
             address += f"&plant[{field}]={plant_id}" #???
