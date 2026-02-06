@@ -134,7 +134,7 @@ class AquaGarden(Garden):
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
-                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge)):
+                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge, sx)):
                     to_plant.update({field: None}) #collect all plants for a request
 
                     # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
