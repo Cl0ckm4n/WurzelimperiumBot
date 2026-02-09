@@ -110,7 +110,8 @@ def main():
 
         # Taking care of megafruit
         if wurzelBot.megafruit is not None:
-            wurzelBot.check_megafruit(mushroom=Mushroom.GIANT_PUFFBALL, buy_from_shop=True, allowed_care_item_prices = ['money'])
+            megafruit = wurzelBot.note.get_megafruit_plant()
+            wurzelBot.check_megafruit(mushroom=megafruit, buy_from_shop=True, allowed_care_item_prices = ['money'])
 
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()

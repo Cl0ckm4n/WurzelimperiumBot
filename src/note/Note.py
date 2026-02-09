@@ -4,6 +4,7 @@
 from enum import Enum
 from src.logger.Logger import Logger
 from src.note.Http import Http
+from src.megafruit.MegafruitData import Mushroom
 from src.product.ProductData import ProductData
 
 class NoteSettings(Enum):
@@ -16,6 +17,7 @@ class NoteSettings(Enum):
     BEE_HIVES = "beeHives:"
     IVY_TYPE = "ivy:"
     HERBGARDEN_ACTIVE = "herbgarden:"
+    MEGAFRUIT = "megafruit:"
 
 class Note:
     """This class handles reading from the user notes"""
@@ -31,6 +33,7 @@ class Note:
         self._bee_hives = None
         self._ivy = None
         self._herbgarden_active = False
+        self._megafruit_plant = Mushroom.MUSHROOM
 
     # MARK: Basic functions
 
@@ -62,6 +65,9 @@ class Note:
     
     def get_herbgarden_active(self) -> bool:
         return self._herbgarden_active
+    
+    def get_megafruit_plant(self) -> Mushroom:
+        return self._megafruit_plant
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -140,6 +146,17 @@ class Note:
                         print(type(line))
                         if line == "1":
                             self._herbgarden_active = True
+                    if setting == NoteSettings.MEGAFRUIT:
+                        plant_id = Mushroom.MUSHROOM
+                        match line:
+                            case "1": plant_id = Mushroom.MUSHROOM
+                            case "2": plant_id = Mushroom.PORCINI
+                            case "3": plant_id = Mushroom.CHANTERELLE
+                            case "4": plant_id = Mushroom.MOREL
+                            case "5": plant_id = Mushroom.OYSTER_MUSHROOM
+                            case "6": plant_id = Mushroom.GIANT_PUFFBALL
+                            case "7": plant_id = Mushroom.GOLDEN_FLUFFBALL
+                        self._megafruit_plant = plant_id
                     else:
                         plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:

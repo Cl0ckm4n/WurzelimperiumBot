@@ -752,17 +752,23 @@ class WurzelBot:
 
         # Only check for stock if no plant is growing
         if not self.megafruit.is_planted() and self.megafruit.get_remaining_time() == 0:
-            plant_id = mushroom.value
+            
             # TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
-            min_stock = 1800
+            if mushroom is Mushroom.GOLDEN_FLUFFBALL:
+                if not self.megafruit.get_spores() >= 1500:
+                    mushroom = Mushroom.GIANT_PUFFBALL
 
-            if Stock().get_stock_by_product_id(plant_id) < min_stock:
-                if not buy_from_shop:
-                    return False
+            if not mushroom is Mushroom.GOLDEN_FLUFFBALL:
+                plant_id = mushroom.value
+                min_stock = 1800
 
-                if self.shop.buy(int(plant_id), min_stock) == -1:
-                    return False
+                if Stock().get_stock_by_product_id(plant_id) < min_stock:
+                    if not buy_from_shop:
+                        return False
 
+                    if self.shop.buy(int(plant_id), min_stock) == -1:
+                        return False
+            
             if not self.megafruit.start(mushroom):
                 return False
 
