@@ -85,7 +85,7 @@ def main():
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
             Logger().print('\nCutting bonsais...')
-            wurzelBot.cut_and_renew_bonsais(finish_level=3, allowed_prices=['money']) #TODO: adjust level to max
+            wurzelBot.cut_and_renew_bonsais(allowed_prices=['money'])
 
     finally:
         # Close connection
