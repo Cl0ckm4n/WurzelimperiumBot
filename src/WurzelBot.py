@@ -697,7 +697,7 @@ class WurzelBot:
         return self.honey.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
 
     # Bonsai
-    def cut_and_renew_bonsais(self, finish_level = None, bonsai = None, allowed_prices: list = ['money']):
+    def cut_and_renew_bonsais(self, finish_level:int = 99, bonsai = None, allowed_prices: list = ['money']):
         """
         cut all branches and renew bonsais
         allowed_prices: All allowed values: ['money', 'coins', 'zen_points]

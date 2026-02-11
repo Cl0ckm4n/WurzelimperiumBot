@@ -106,16 +106,18 @@ class Bonsai:
 	#BG - Търси размножени бонсаи в JSON съдържанието и връща ниво, награда и разклонения.
         available_bonsais = {}
 
-        for bonsai in content['data']['breed']:
-            level: int = content['data']['breed'][bonsai]['level']
-            reward: dict = content['data']['breed'][bonsai]['reward']
-            slot_no = content['data']['breed'][bonsai]['slot']
-            branches = content['data']['breed'][bonsai]['branches']
-            bowl = content['data']['breed'][bonsai]['bowl']
-            available_bonsais[slot_no] = [level, reward, branches, bowl]
+        if content['data']:
+            for bonsai in content['data']['breed']:
+                level: int = content['data']['breed'][bonsai]['level']
+                reward: dict = content['data']['breed'][bonsai]['reward']
+                slot_no = content['data']['breed'][bonsai]['slot']
+                branches = content['data']['breed'][bonsai]['branches']
+                bowl = content['data']['breed'][bonsai]['bowl']
+                percent = content['data']['breed'][bonsai]['percent']
+                available_bonsais[slot_no] = [level, reward, branches, bowl, percent]
         for slot in self.__bonsaiavailable:
             if str(slot) not in available_bonsais.keys():
-                available_bonsais[str(slot)] = [None, None, None, None]
+                available_bonsais[str(slot)] = [None, None, None, None, 0]
 
         return available_bonsais
 
@@ -170,7 +172,7 @@ class Bonsai:
 
         return True
 
-    def check(self, finish_level: int = None, bonsai = None, allowed_prices: list = ['money']) -> bool:
+    def check(self, finish_level: int = 99, bonsai = None, allowed_prices: list = ['money'], pot = SIMPLE_POT) -> bool:
         """
         Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot
         allowed_prices: list = ['money', 'coins', 'zen_points']
@@ -196,7 +198,8 @@ class Bonsai:
 
         for key in self.__slot_infos.keys():
             level = self.__slot_infos[key][0]
-            if level is None or level >= finish_level:
+            finish_percent = self.__slot_infos[key][4]
+            if level is None or level >= finish_level or finish_percent == 100:
                 if level is not None:
                     Logger().print(f'Finish Bonsai in slot {key} with level {level}')
                 else:
@@ -210,7 +213,7 @@ class Bonsai:
 
                 if self.__slot_infos[key][3] is None or self.__slot_infos[key][3] == '0':
                     # TODO use pot/bowl from stock if possible
-                    data = self.__http.buy_and_place(SIMPLE_POT, 1, key)
+                    data = self.__http.buy_and_place(pot, 1, key)
                     if data is None:
                         return False
                     self.__set_data(data)
