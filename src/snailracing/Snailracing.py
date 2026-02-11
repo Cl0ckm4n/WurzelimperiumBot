@@ -172,6 +172,7 @@ class Snailracing:
             if self.__check_bar_products_availability(bar_pid):
                 data = self.__http.start_bar_production(slot, bar_pid)
                 self.__set_data(data)
+                self.__stock.update()
 
     def __check_bar_products_availability(self, bar_pid, buy_from_shop = True):
         bar_products = self.__get_bar_products(bar_pid)
