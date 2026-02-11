@@ -6,7 +6,9 @@ import logging
 import os, json
 
 from src.core.User import User
+from src.shop.Shop import Shop
 from src.snailracing.Http import Http
+from src.stock.Stock import Stock
 
 RACE_DURATION = 172800 #seconds; 48h
 RACE_TERRAIN_ADVANTAGE = 0.2
@@ -110,6 +112,8 @@ class Snailracing:
         if not json:
             self.__http = Http()
             self.__user = User()
+            self.__shop = Shop()
+            self.__stock = Stock()
         self.__log = logging.getLogger(f'bot.{self.__class__.__name__}')
         self.__log.setLevel(logging.INFO)
         if json:
@@ -160,13 +164,27 @@ class Snailracing:
         print('➡ src/snailracing/Snailracing.py:209 slots_free:', slots_free)
             
         return slots_free
+    
     def start_bar_production(self, bar_pid=473) -> None:
         slots_free = self.__get_production_slots_free()
         print('➡ src/snailracing/Snailracing.py:205 slots_free:', slots_free)
         for slot in slots_free:
-            #TODO: check products
-            data = self.__http.start_bar_production(slot, bar_pid)
-            self.__set_data(data)
+            if self.__check_bar_products_availability(bar_pid):
+                data = self.__http.start_bar_production(slot, bar_pid)
+                self.__set_data(data)
+
+    def __check_bar_products_availability(self, bar_pid, buy_from_shop = True):
+        bar_products = self.__get_bar_products(bar_pid)
+        for pid, amount in bar_products.items():
+            if self.__stock.get_stock_by_product_id(pid) < amount:
+                if buy_from_shop:
+                    self.__shop.buy(product_name=int(pid), amount=amount)
+                else:
+                    return False
+        return True
+
+    def __get_bar_products(self, bar_pid) -> dict:
+        return self.__data.get("config", {}).get("products", {}).get(str(bar_pid), {}).get("products", {})
 
     def collect_bar_production(self) -> None:
         productions = self.__data.get("data", 0).get("productions", 0)
@@ -175,7 +193,7 @@ class Snailracing:
         for slot, data in productions.items():
             if data.get("remain", None) <= 0:
                 print('➡ src/snailracing/Snailracing.py:216 data.get("remain":', data.get("remain"))
-                print(f"\n\nslot {slot} finished") #TODO: test
+                print(f"\n\nslot {slot} finished")
                 data = self.__http.harvest_bar_production(slot)
                 self.__set_data(data)
 
