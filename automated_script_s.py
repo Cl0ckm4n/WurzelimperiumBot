@@ -6,7 +6,6 @@ import time
 import i18n
 from src.core.Config import Config
 from src.logger.Logger import Logger
-from src.megafruit.Megafruit import Mushroom
 from src.WurzelBot import WurzelBot
 
 def main():
@@ -86,7 +85,7 @@ def main():
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
             Logger().print('\nCutting bonsais...')
-            wurzelBot.cut_and_renew_bonsais(allowed_prices=['money'])
+            wurzelBot.cut_and_renew_bonsais(bonsai=wurzelBot.note.get_bonsai_tree(), allowed_prices=['money'], pot=wurzelBot.note.get_bonsai_pot())
 
     finally:
         # Close connection

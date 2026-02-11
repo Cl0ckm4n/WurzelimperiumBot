@@ -183,18 +183,10 @@ class Bonsai:
                 Logger().print('No bonsai available or affordable')
                 return False
 
-        # If no finish_level is specified, use maximum level of bonsai
-        bonsai_max_level = get_tree_max_level(bonsai)
-        print('➡ src/bonsai/Bonsai.py:188 bonsai_max_level:', bonsai_max_level)
-        if bonsai_max_level is None:
-            Logger().print(f'No max. level found for specified bonsai {bonsai}.')
-            return False
-        finish_level = bonsai_max_level
-
         # Add unused slot to slot_infos so that it can be used to place a bonsai
         for slot in self.__bonsaiavailable:
             if str(slot) not in self.__slot_infos:
-                self.__slot_infos[str(slot)] = [None, None, None, None]
+                self.__slot_infos[str(slot)] = [None, None, None, None, 0]
 
         for key in self.__slot_infos.keys():
             level = self.__slot_infos[key][0]

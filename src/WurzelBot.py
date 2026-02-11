@@ -9,6 +9,7 @@ Created on 21.03.2017
 from src.biogas.Biogas import Biogas
 from src.birds.Birds import Birds
 from src.bonsai.Bonsai import Bonsai
+from src.bonsai.ShopProduct import SIMPLE_POT
 from src.bonus.Bonus import Bonus
 from src.citypark.CityPark import CityPark
 from src.core.Feature import Feature
@@ -697,7 +698,7 @@ class WurzelBot:
         return self.honey.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
 
     # Bonsai
-    def cut_and_renew_bonsais(self, finish_level:int = 99, bonsai = None, allowed_prices: list = ['money']):
+    def cut_and_renew_bonsais(self, finish_level:int = 99, bonsai = None, allowed_prices: list = ['money'], pot = SIMPLE_POT):
         """
         cut all branches and renew bonsais
         allowed_prices: All allowed values: ['money', 'coins', 'zen_points]
@@ -707,7 +708,7 @@ class WurzelBot:
             return
 
         self.bonsaifarm.cut_all()
-        self.bonsaifarm.check(finish_level, bonsai, allowed_prices)
+        self.bonsaifarm.check(finish_level, bonsai, allowed_prices, pot)
         self.bonsaifarm.cut_all()
 
     # City park

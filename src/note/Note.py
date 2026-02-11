@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from enum import Enum
+from src.bonsai.ShopProduct import *
 from src.logger.Logger import Logger
 from src.note.Http import Http
 from src.megafruit.MegafruitData import Mushroom
@@ -18,6 +19,8 @@ class NoteSettings(Enum):
     IVY_TYPE = "ivy:"
     HERBGARDEN_ACTIVE = "herbgarden:"
     MEGAFRUIT = "megafruit:"
+    BONSAI_POT = "bonsaiPot:"
+    BONSAI_TREE = "bonsaiTree:"
 
 class Note:
     """This class handles reading from the user notes"""
@@ -34,6 +37,8 @@ class Note:
         self._ivy = None
         self._herbgarden_active = False
         self._megafruit_plant = Mushroom.MUSHROOM
+        self._bonsai_pot = SIMPLE_POT
+        self._bonsai_tree = None
 
     # MARK: Basic functions
 
@@ -68,6 +73,12 @@ class Note:
     
     def get_megafruit_plant(self) -> Mushroom:
         return self._megafruit_plant
+    
+    def get_bonsai_pot(self) -> int:
+        return self._bonsai_pot
+    
+    def get_bonsai_tree(self) -> int:
+        return self._bonsai_tree
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -141,12 +152,12 @@ class Note:
                     if setting == NoteSettings.IVY_TYPE:
                         self._ivy = line
                         print('➡ src/note/Note.py:128 self._ivy:', self._ivy)
-                    if setting == NoteSettings.HERBGARDEN_ACTIVE:
+                    elif setting == NoteSettings.HERBGARDEN_ACTIVE:
                         print(f"\n\n\n {line}")
                         print(type(line))
                         if line == "1":
                             self._herbgarden_active = True
-                    if setting == NoteSettings.MEGAFRUIT:
+                    elif setting == NoteSettings.MEGAFRUIT:
                         plant_id = Mushroom.MUSHROOM
                         match line:
                             case "1": plant_id = Mushroom.MUSHROOM
@@ -157,6 +168,34 @@ class Note:
                             case "6": plant_id = Mushroom.GIANT_PUFFBALL
                             case "7": plant_id = Mushroom.GOLDEN_FLUFFBALL
                         self._megafruit_plant = plant_id
+                    elif setting == NoteSettings.BONSAI_POT:
+                        pot_id = SIMPLE_POT
+                        match line:
+                            case "1": pot_id = SIMPLE_POT
+                            case "2": pot_id = GOLDEN_POT
+                            case "3": pot_id = SQUARE_POT
+                            case "4": pot_id = ORGANIC_POT
+                            case "5": pot_id = PAINTED_POT
+                            case "6": pot_id = SQUARE_POT_WITH_FLOWERS
+                            case "7": pot_id = BLUE_POT
+                            case "8": pot_id = GLASS_POT
+                            case "9": pot_id = ANTIQUE_POT
+                            case "10": pot_id = DECORATED_POT
+                        self._bonsai_pot = pot_id
+                    elif setting == NoteSettings.BONSAI_TREE:
+                        tree_id = None
+                        match line:
+                            case "1": tree_id = MAIDENHAIR_PINE
+                            case "2": tree_id = MANGROVE
+                            case "3": tree_id = MONEY_TREE
+                            case "4": tree_id = SPRUCE_FOREST
+                            case "5": tree_id = CYPRESS
+                            case "6": tree_id = JUNIPER
+                            case "7": tree_id = OAK
+                            case "8": tree_id = MAPLE
+                            case "9": tree_id = ASH
+                            case "10": tree_id = CHERRY_TREE
+                        self._bonsai_tree = tree_id
                     else:
                         plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:
