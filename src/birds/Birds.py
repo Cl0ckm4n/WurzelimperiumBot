@@ -222,16 +222,16 @@ class Birds:
                 if job in impossible_jobs:
                     impossible_jobs.remove(job)
 
-                job_products = job_data.get("products", 0)#dict; check Stock if available; if not buy
-                print('➡ src/birds/Birds.py:236 job_products:', job_products)
-                for pid, amount in job_products.items():
-                    print('➡ src/birds/Birds.py:247 pid:', pid)
-                    print('➡ src/birds/Birds.py:247 amount:', amount)
-                    if self.__stock.get_stock_by_product_id(pid) < amount:
-                        if buy_from_shop:
-                            self.__shop.buy(product_name=pid, amount=amount)
-                        else:
-                            return #TODO: log error
+                # job_products = job_data.get("products", 0)#dict; check Stock if available; if not buy
+                # print('➡ src/birds/Birds.py:236 job_products:', job_products)
+                # for pid, amount in job_products.items():
+                #     print('➡ src/birds/Birds.py:247 pid:', pid)
+                #     print('➡ src/birds/Birds.py:247 amount:', amount)
+                #     if self.__stock.get_stock_by_product_id(pid) < amount:
+                #         if buy_from_shop:
+                #             self.__shop.buy(product_name=pid, amount=amount)
+                #         else:
+                #             return #TODO: log error
 
                 job_rewards = job_data.get("rewards", 0)#TODO: for future, maybe calc best combination...?!
                 print('➡ src/birds/Birds.py:238 job_rewards:', job_rewards)
@@ -241,6 +241,15 @@ class Birds:
             print('➡ src/birds/Birds.py:264 possible_jobs:', possible_jobs)
             if possible_jobs:
                 best_job = max(possible_jobs, key=possible_jobs.get)
+                job_data = self.__jobs.get(best_job, 0)
+                job_products = job_data.get("products", 0)#dict; check Stock if available; if not buy
+                for pid, amount in job_products.items():
+                    if self.__stock.get_stock_by_product_id(pid) < amount:
+                        if buy_from_shop:
+                            self.__shop.buy(product_name=int(pid), amount=amount)
+                        else:
+                            print("ERROR: no products bought!")
+                            return False#TODO: log error
             else:
                 print(f"\n\n ### NO JOB for house {house} available ###")
                 continue
@@ -248,6 +257,7 @@ class Birds:
             print("\n\n\n ### START JOB ###")
             content = self.__http.start_job(jobslot=best_job, house_nr=house)
             self.__set_data(content)
+            self.__stock.update()
 
         for job in impossible_jobs:
             print(f"\n\n\n ### REMOVE IMPOSSIBLE JOB {job} ###")
