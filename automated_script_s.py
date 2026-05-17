@@ -87,6 +87,9 @@ def main():
             Logger().print('\nCutting bonsais...')
             wurzelBot.cut_and_renew_bonsais(bonsai=wurzelBot.note.get_bonsai_tree(), allowed_prices=['money'], pot=wurzelBot.note.get_bonsai_pot())
 
+        if wurzelBot.birds is not None:
+            wurzelBot.check_birds(bird_nr=1)
+
     finally:
         # Close connection
         # BG-Затваряне на връзката

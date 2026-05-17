@@ -119,7 +119,7 @@ def main():
         wurzelBot.collect_decogardens()
         
         if wurzelBot.birds is not None:
-            wurzelBot.check_birds()
+            wurzelBot.check_birds(bird_nr=7)
 
         if wurzelBot.vacation is not None:
             wurzelBot.check_vacation()

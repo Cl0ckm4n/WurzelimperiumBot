@@ -808,8 +808,8 @@ class WurzelBot:
         self.vacation.check_customers()
 
     #Birds
-    def check_birds(self):
+    def check_birds(self, bird_nr):
         self.birds.finish_jobs()
-        self.birds.feed_and_renew_birds()
+        self.birds.feed_and_renew_birds(bird_nr=bird_nr)
         self.birds.check_contest()
         self.birds.start_birds()

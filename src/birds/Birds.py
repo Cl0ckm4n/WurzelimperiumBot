@@ -120,7 +120,7 @@ class Birds:
                 content = self.__http.finish_job(slot=slot)
                 self.__set_data(content)
 
-    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 5) -> None:
+    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 1) -> None:
         for house, data in self.__houses.items():
             print('➡ src/birds/Birds.py:138 house:', house)
             if house in self.__get_occupied_houses():
@@ -243,7 +243,11 @@ class Birds:
                 best_job = max(possible_jobs, key=possible_jobs.get)
                 job_data = self.__jobs.get(best_job, 0)
                 job_products = job_data.get("products", 0)#dict; check Stock if available; if not buy
+                print('➡ src/birds/Birds.py:236 job_products:', job_products)
                 for pid, amount in job_products.items():
+                    print('➡ src/birds/Birds.py:247 pid:', pid)
+                    print('➡ src/birds/Birds.py:247 amount:', amount)
+                    print(self.__stock.get_stock_by_product_id(pid))
                     if self.__stock.get_stock_by_product_id(pid) < amount:
                         if buy_from_shop:
                             self.__shop.buy(product_name=int(pid), amount=amount)
