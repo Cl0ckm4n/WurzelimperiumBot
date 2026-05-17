@@ -268,7 +268,10 @@ class Birds:
             content = self.__http.remove_job(slot=job)
             self.__set_data(content)
 
-    def check_contest(self, buy_from_shop = True): #TODO: available ab Vogelpost-Level 3
+    def check_contest(self, buy_from_shop = True):
+        #check if birdpost has required level
+        if self.__data.get("data", {}).get("level", 0) < 3:
+            return False
         #check if contest available
         if '10' in self.__jobs.keys():
             Logger().debug(f'➡ src/birds/Birds.py:246 self.__jobs: {self.__jobs}')
