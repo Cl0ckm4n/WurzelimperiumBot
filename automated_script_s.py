@@ -69,7 +69,7 @@ def main():
         # Play minigames
         Logger().print('')
         Logger().print('Playing minigames...')
-        wurzelBot.minigames.play(allowed_events = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'fair', 'pumpkin_digging'])
+        wurzelBot.minigames.play()
 
         # Check Herbgarden
         if wurzelBot.note.get_herbgarden_active():

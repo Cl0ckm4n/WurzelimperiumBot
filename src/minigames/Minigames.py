@@ -4,6 +4,7 @@
 from src.core.HTTPCommunication import HTTPConnection
 from src.logger.Logger import Logger
 from src.minigames.adventCalendar.AdventCalendar import AdventCalendar
+from src.minigames.bingo.Bingo import Bingo
 from src.minigames.birthdayCalendar.BirthdayCalendar import BirthdayCalendar
 from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
 from src.minigames.summerMemory.SummerMemory import SummerMemory
@@ -12,10 +13,10 @@ from src.minigames.pumpkinDigging.PumpkinDigging import PumpkinDigging
 
 
 class Minigames:
-    def play(self, allowed_events: list = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'summer_memory', 'fair', 'pumpkin_digging']) -> bool:
+    def play(self, allowed_events: list = ['advent_calendar', 'birthday_calendar', 'summer_calendar', 'summer_memory', 'fair', 'pumpkin_digging', 'snowball_fight', 'bingo']) -> bool:
         """
         Args:
-            allowed_events (list): advent_calendar, birthday_calendar, summer_calendar, summer_memory, fair, pumpkin_digging.
+            allowed_events (list): advent_calendar, birthday_calendar, summer_calendar, summer_memory, fair, pumpkin_digging, 'snowball_fight', bingo.
         """
         # Get page content only once to reduce the amount of page loads
         content = self.__get_content()
@@ -28,13 +29,13 @@ class Minigames:
         if 'advent_calendar' in allowed_events:
             self.__adventCalendar = AdventCalendar()
             if self.__adventCalendar.is_available(content):
-                Logger().print('Opening advent calendar...')
+                Logger().print('\nOpening advent calendar...')
                 self.__adventCalendar.play()
 
         if 'birthday_calendar' in allowed_events:
             self.__birthdayCalendar = BirthdayCalendar()
             if self.__birthdayCalendar.is_available(content):
-                Logger().print('Opening birthday calendar...')
+                Logger().print('\nOpening birthday calendar...')
                 self.__birthdayCalendar.play()
 
         #TODO: add easter digging (like pumpkin digging)
@@ -42,26 +43,33 @@ class Minigames:
         if 'summer_calendar' in allowed_events: 
             self.__summerCalendar = SummerCalendar()
             if self.__summerCalendar.is_available(content):
-                Logger().print('Opening summer calendar...')
+                Logger().print('\nOpening summer calendar...')
                 self.__summerCalendar.play()
 
         if 'summer_memory' in allowed_events: 
             self.__summerMemory = SummerMemory()
             if self.__summerMemory.is_available(content):
-                Logger().print('Playing summer memory...')
+                Logger().print('\nPlaying summer memory...')
                 self.__summerMemory.play()
 
         if 'fair' in allowed_events: 
             self.__fair = Fair()
             if self.__fair.is_available(content):
-                Logger().print('Playing fair...')
+                Logger().print('\nPlaying fair...')
                 self.__fair.play()
 
         if 'pumpkin_digging' in allowed_events: 
             self.__pumpkinDigging = PumpkinDigging()
             if self.__pumpkinDigging.is_available(content):
-                Logger().print('Playing pumkin digging game...')
+                Logger().print('\nPlaying pumpkin digging game...')
                 self.__pumpkinDigging.play()
+
+
+        if 'bingo' in allowed_events: 
+            self.__bingo = Bingo()
+            if self.__bingo.is_available(content):
+                Logger().print('\nPlaying bingo...')
+                self.__bingo.play()
 
         return True
 
