@@ -18,7 +18,7 @@ class Bingo:
 
     def play(self) -> bool:
         self.__content = self.__http.init_game()
-        if self.__content is None:
+        if self.__content is None or self.__content == 0:
             return False
         if self.__content.get("data", {}).get("data", {}).get("freespin_remain", 99999) <= 0:
             self.__content = self.__http.collect_spin()
@@ -33,5 +33,5 @@ class Bingo:
     def __check_time_span(self) -> bool:
         today = date.today()
         start_date = date(today.year, 5, 19)
-        end_date = date(today.year, 5, 26)
+        end_date = date(today.year, 5, 25)
         return start_date <= today <= end_date
