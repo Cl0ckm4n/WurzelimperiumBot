@@ -89,6 +89,9 @@ def main():
 
         if wurzelBot.birds is not None:
             wurzelBot.check_birds(bird_nr=1)
+        
+        if wurzelBot.mine is not None:
+            wurzelBot.check_mine(wurzelBot.note.get_mine_dino_active(), wurzelBot.note.get_mine_dino_fav())
 
     finally:
         # Close connection

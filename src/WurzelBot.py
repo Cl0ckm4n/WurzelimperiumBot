@@ -6,6 +6,9 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
+from collections import Counter
+import i18n, datetime
+
 from src.biogas.Biogas import Biogas
 from src.birds.Birds import Birds
 from src.bonsai.Bonsai import Bonsai
@@ -29,17 +32,18 @@ from src.marketplace.Marketplace import Marketplace
 from src.megafruit.Megafruit import Megafruit
 from src.megafruit.MegafruitData import Mushroom, Care_OID
 from src.message.Messenger import Messenger
+from src.mine.Mine import Mine
 from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
 from src.shop.Shop import Shop
-from src.stock.Stock import Stock
 from src.snailracing.Snailracing import Snailracing
+from src.stock.Stock import Stock
 from src.vacation.Vacation import Vacation
 from src.wimp.Wimp import Wimp
-from collections import Counter
-import i18n, datetime
+
+
 
 i18n.load_path.append('lang')
 
@@ -73,6 +77,7 @@ class WurzelBot:
         self.minigames = Minigames()
         self.vacation = None
         self.birds = None
+        self.mine = None
 
 
     def __init_gardens(self) -> bool:
@@ -125,7 +130,11 @@ class WurzelBot:
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
 
-            self.decogarden1 = Decogarden1()
+            if Feature().is_mine_available():
+                self.mine = Mine()
+            
+            if Feature().is_decogarden_available():
+                self.decogarden1 = Decogarden1()
 
             return True
 
@@ -813,3 +822,8 @@ class WurzelBot:
         self.birds.feed_and_renew_birds(bird_nr=bird_nr)
         self.birds.check_contest()
         self.birds.start_birds()
+    #Mine
+    def check_mine(self, dino_active=0, dino_fav = 1):
+        self.mine.harvest_layer()
+        self.mine.feed_worker()
+        self.mine.start_worker(dino_active, dino_fav)

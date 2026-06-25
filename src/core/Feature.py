@@ -111,3 +111,10 @@ class Feature:
             return self.__city_data['data']['location']['birds']['bought'] == 1
         else:
             return False
+    def is_mine_available(self) -> bool:
+        if User().get_level() < 21:
+            return False
+        if 'mine' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['mine']['bought'] == 1
+        else:
+            return False

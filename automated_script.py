@@ -123,6 +123,9 @@ def main():
 
         if wurzelBot.vacation is not None:
             wurzelBot.check_vacation()
+
+        if wurzelBot.mine is not None:
+            wurzelBot.check_mine(wurzelBot.note.get_mine_dino_active(), wurzelBot.note.get_mine_dino_fav())
         
     finally:
         # Close connection

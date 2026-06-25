@@ -21,6 +21,8 @@ class NoteSettings(Enum):
     MEGAFRUIT = "megafruit:"
     BONSAI_POT = "bonsaiPot:"
     BONSAI_TREE = "bonsaiTree:"
+    MINE_DINO_ACTIVE = "mineDinoActive:"
+    MINE_DINO_FAV = "mineDinoFav:"
 
 class Note:
     """This class handles reading from the user notes"""
@@ -39,6 +41,8 @@ class Note:
         self._megafruit_plant = Mushroom.MUSHROOM
         self._bonsai_pot = SIMPLE_POT
         self._bonsai_tree = None
+        self._mine_dino_active= None
+        self._mine_dino_fav= None
 
     # MARK: Basic functions
 
@@ -79,6 +83,12 @@ class Note:
     
     def get_bonsai_tree(self) -> int:
         return self._bonsai_tree
+    
+    def get_mine_dino_active(self) -> int:
+        return self._mine_dino_active
+    
+    def get_mine_dino_fav(self) -> int:
+        return self._mine_dino_fav
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()
@@ -213,6 +223,10 @@ class Note:
                         self._watergarden_plant_edge = plant_name
                     if setting == NoteSettings.BEE_HIVES:
                         self._bee_hives = plant_name
+                    if setting == NoteSettings.MINE_DINO_ACTIVE:
+                        self._mine_dino_active = plant_name
+                    if setting == NoteSettings.MINE_DINO_FAV:
+                        self._mine_dino_fav = plant_name
 
 
     def get_stop_bot(self) -> bool:
