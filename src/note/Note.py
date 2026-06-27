@@ -41,8 +41,8 @@ class Note:
         self._megafruit_plant = Mushroom.MUSHROOM
         self._bonsai_pot = SIMPLE_POT
         self._bonsai_tree = None
-        self._mine_dino_active= None
-        self._mine_dino_fav= None
+        self._mine_dino_active= 0
+        self._mine_dino_fav= 1
 
     # MARK: Basic functions
 
@@ -206,11 +206,15 @@ class Note:
                             case "9": tree_id = ASH
                             case "10": tree_id = CHERRY_TREE
                         self._bonsai_tree = tree_id
+                    elif setting == NoteSettings.MINE_DINO_ACTIVE:
+                        self._mine_dino_active = line
+                    elif setting == NoteSettings.MINE_DINO_FAV:
+                        self._mine_dino_fav = line
                     else:
                         plant_name = self.__product_data.get_product_by_name(line).get_name()
                 except:
                     Logger().error(f"Could not find plant: {line}")
-                else:
+                else: #only if plant
                     if setting == NoteSettings.GARDEN_PLANT_1:
                         self._garden_plant_1 = plant_name
                     if setting == NoteSettings.GARDEN_PLANT_2:
@@ -221,12 +225,6 @@ class Note:
                         self._watergarden_plant_2 = plant_name
                     if setting == NoteSettings.WATERGARDEN_PLANT_EDGE:
                         self._watergarden_plant_edge = plant_name
-                    if setting == NoteSettings.BEE_HIVES:
-                        self._bee_hives = plant_name
-                    if setting == NoteSettings.MINE_DINO_ACTIVE:
-                        self._mine_dino_active = plant_name
-                    if setting == NoteSettings.MINE_DINO_FAV:
-                        self._mine_dino_fav = plant_name
 
 
     def get_stop_bot(self) -> bool:
