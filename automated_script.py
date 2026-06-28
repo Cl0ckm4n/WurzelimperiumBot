@@ -42,6 +42,9 @@ def main():
 
         wurzelBot.note.get_note_settings()
 
+        if wurzelBot.museum is not None:
+            wurzelBot.check_museum(wurzelBot.note.get_museum_booster())
+
         wurzelBot.send_bees(tour=1)
         # Remove weed
         # BG-Премахване на плевели

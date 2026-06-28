@@ -21,6 +21,7 @@ class NoteSettings(Enum):
     MEGAFRUIT = "megafruit:"
     BONSAI_POT = "bonsaiPot:"
     BONSAI_TREE = "bonsaiTree:"
+    MUSEUM_BOOSTER = "museumBooster:"
     MINE_DINO_ACTIVE = "mineDinoActive:"
     MINE_DINO_FAV = "mineDinoFav:"
 
@@ -41,6 +42,7 @@ class Note:
         self._megafruit_plant = Mushroom.MUSHROOM
         self._bonsai_pot = SIMPLE_POT
         self._bonsai_tree = None
+        self._museum_booster= 0
         self._mine_dino_active= 0
         self._mine_dino_fav= 1
 
@@ -83,6 +85,9 @@ class Note:
     
     def get_bonsai_tree(self) -> int:
         return self._bonsai_tree
+    
+    def get_museum_booster(self) -> int:
+        return self._museum_booster
     
     def get_mine_dino_active(self) -> int:
         return self._mine_dino_active
@@ -206,6 +211,8 @@ class Note:
                             case "9": tree_id = ASH
                             case "10": tree_id = CHERRY_TREE
                         self._bonsai_tree = tree_id
+                    elif setting == NoteSettings.MUSEUM_BOOSTER:
+                        self._museum_booster = line
                     elif setting == NoteSettings.MINE_DINO_ACTIVE:
                         self._mine_dino_active = line
                     elif setting == NoteSettings.MINE_DINO_FAV:

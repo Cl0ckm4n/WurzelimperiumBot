@@ -23,6 +23,15 @@ class Megafruit:
         self.__data = content.get("data", None)
         return self.__data is not None
 
+    def action_needed(self) -> bool:
+        """check if harvest or care is needed"""
+        if self.get_remaining_time() <= 0 or \
+        (not self.__data.get('entry', {}).get('data', {}) == "" and self.__data.get('entry', {}).get('data', {}).get('used', {}).get("water", {}).get('remain', 0) > 0) or \
+        (not self.__data.get('entry', {}).get('data', {}) == "" and self.__data.get('entry', {}).get('data', {}).get('used', {}).get("light", {}).get('remain', 0) > 0) or \
+        (not self.__data.get('entry', {}).get('data', {}) == "" and self.__data.get('entry', {}).get('data', {}).get('used', {}).get("fertilize", {}).get('remain', 0) > 0):
+            return False
+        return True
+
     # MARK: Base functions
 
     def start(self, plant: Mushroom = 0) -> bool:

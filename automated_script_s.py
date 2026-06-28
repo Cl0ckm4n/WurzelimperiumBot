@@ -35,6 +35,9 @@ def main():
     try:
         wurzelBot.note.get_note_settings()
 
+        if wurzelBot.museum is not None:
+            wurzelBot.check_museum()
+
         # Send bees
         wurzelBot.send_bees(tour=1)
         

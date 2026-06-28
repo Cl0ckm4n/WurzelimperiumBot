@@ -121,6 +121,15 @@ class Feature:
             return self.__city_data['data']['location']['birds']['bought'] == 1
         else:
             return False
+        
+    def is_museum_available(self) -> bool:
+        if User().get_level() < 10:
+            return False
+        if 'museum' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['museum']['bought'] == 1
+        else:
+            return False
+        
     def is_mine_available(self) -> bool:
         if User().get_level() < 21:
             return False

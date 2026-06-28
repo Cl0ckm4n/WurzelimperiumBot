@@ -34,6 +34,7 @@ from src.megafruit.MegafruitData import Mushroom, Care_OID
 from src.message.Messenger import Messenger
 from src.mine.Mine import Mine
 from src.minigames.Minigames import Minigames
+from src.museum.Museum import Museum
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
@@ -77,6 +78,7 @@ class WurzelBot:
         self.minigames = Minigames()
         self.vacation = None
         self.birds = None
+        self.museum = None
         self.mine = None
 
 
@@ -129,6 +131,9 @@ class WurzelBot:
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
+
+            if Feature().is_museum_available():
+                self.museum = Museum()
 
             if Feature().is_mine_available():
                 self.mine = Mine()
@@ -822,6 +827,13 @@ class WurzelBot:
         self.birds.feed_and_renew_birds(bird_nr=bird_nr)
         self.birds.check_contest()
         self.birds.start_birds()
+
+    #Museum
+    def check_museum(self, booster_active = False):
+        self.museum.collect_points()
+        if booster_active:
+            self.museum.check_booster()
+
     #Mine
     def check_mine(self, dino_active=0, dino_fav = 1):
         self.mine.harvest_layer()
