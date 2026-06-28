@@ -23,7 +23,9 @@ class Museum:
             print("No points to collect!")
             return False
         content = self.__http.collect_points()
-        print(f"Collected {content.get("rewards", {}).get("points", "n/a")} points.")
+        rewards = content.get("rewards", {}).get("points", "n/a")
+        print(f"Collected {rewards} points.")
+        self.__set_data(content)
 
     def check_booster(self):
         megafruit_booster = self.__data.get("booster", {}).get("megafruit", {}).get("remain", 999999)
