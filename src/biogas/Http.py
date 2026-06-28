@@ -24,3 +24,30 @@ class Http(object):
             return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
+
+    def start_production(self, setup):
+        address = f'ajax/ajax.php?do=biogas_production_start&setup={{{setup}}}&token={self.__http.token()}'
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except:
+            raise
+
+    def harvest_production(self, material_type, slot):
+        address = f'ajax/ajax.php?do=biogas_production_harvest&type={material_type}&slot={slot}&token={self.__http.token()}'
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except:
+            raise
+
+    def buy_item(self, item_name, item_slot = 0, item_amount = 1):
+        address = f'ajax/ajax.php?do=biogas_buy_shop_item&name={item_name}&slot={item_slot}&amount={item_amount}&token={self.__http.token()}'
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except:
+            raise
