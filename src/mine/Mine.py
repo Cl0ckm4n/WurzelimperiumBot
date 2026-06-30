@@ -272,7 +272,7 @@ class Mine:
                 items.append(item_id)
 
         if not len(items) > 0:
-            if not self.__get_item_mine_points(item_name) >= self.__get_mine_points():
+            if not self.__get_item_mine_points(item_name) <= self.__get_mine_points():
                 return 0
             content = self.__http.craft_item(item_name)
             self.__set_data(content)
