@@ -242,13 +242,20 @@ class Mine:
             #ohne Dino: setup={"level":2,"pos":1,"favdino":"dino2","worker":{"1":1},"items":{"1":179977}}
 
             ##DINO
+            print('➡ src/mine/Mine.py:246 self.__get_mine_level():', self.__get_mine_level())
+            print('➡ src/mine/Mine.py:246 dino_active:', dino_active)
             if dino_active and self.__get_mine_level() >= 5:
+                print("get dino item")
                 if self.__craft_dino_item("dinoitem1"):
                     item1 = self.__craft_dino_item("dinoitem1") #150 mine_points
+                    print('➡ src/mine/Mine.py:250 item1:', item1)
                     item2 = self.__craft_dino_item("dinoitem6")
+                    print('➡ src/mine/Mine.py:252 item2:', item2)
                     if self.__craft_dino_item("dinoitem7"): #"dinoitem7" 1200 mine_points --> fallback "dinoitem6"
                         item2 = self.__craft_dino_item("dinoitem7")
+                        print('➡ src/mine/Mine.py:255 item2:', item2)
                     setup = setup + f',"dinos":{{"1":{item1},"2":{item2}}}'
+                    print('➡ src/mine/Mine.py:256 setup:', setup)
             
             print('➡ src/mine/Mine.py:169 setup:', setup)
             content = self.__http.start_worker(setup)
