@@ -151,7 +151,7 @@ class Birds:
             if product:
                 if self.__stock.get_stock_by_product_id(pid) < amount:
                     if buy_from_shop:
-                        buy = self.__shop.buy(product_name=pid, amount=amount)
+                        buy = self.__shop.buy(product_name=product.get_name(), amount=amount)
                         if not buy:
                             return False
                     else: 
@@ -307,7 +307,7 @@ class Birds:
             amount = math.ceil(load_max/3/price)
             if self.__stock.get_stock_by_product_id(pid) < amount:
                 if buy_from_shop:
-                    self.__shop.buy(product_name=pid, amount=amount)
+                    self.__shop.buy(product_name=product.get_name(), amount=amount)
                 else:
                     Logger().error("### BUYING IN SHOP DISABLED")
                     return False
