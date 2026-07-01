@@ -672,6 +672,11 @@ class WurzelBot:
                     self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
 
     # Bees
+    def check_bee_booster(self, booster: str = "000"):
+        if not self.honey:
+            return
+        self.honey.check_boosters(booster)
+
     def send_bees(self, tour: int) -> bool:
         """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
         if not self.honey:
