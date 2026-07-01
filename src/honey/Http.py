@@ -68,3 +68,36 @@ class Http:
             honey_quest.update(new)
             i = i + 1
         return honey_quest
+    
+    def activate_speed_booster(self, id = 1):
+        address = f'ajax/ajax.php?do=bees_buybooster&id={id}&token={self.__http.token()}'
+        print('➡ src/honey/Http.py:74 address:', address)
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception(f'Failed to activate speed booster!')
+            return None
+    
+    def activate_yield_booster(self):
+        address = f'ajax/ajax.php?do=bees_&token={self.__http.token()}' #TODO:
+        print('➡ src/honey/Http.py:85 address:', address)
+        # try:
+        #     response, content = self.__http.send(address)
+        #     self.__http.check_http_state_ok(response)
+        #     return self.__http.get_json_and_check_for_ok(content)
+        # except Exception:
+        #     Logger().print_exception(f'Failed to activate yield booster!')
+        #     return None
+    
+    def activate_points_booster(self):
+        address = f'ajax/ajax.php?do=bees_&token={self.__http.token()}' #TODO:
+        print('➡ src/honey/Http.py:97 address:', address)
+        # try:
+        #     response, content = self.__http.send(address)
+        #     self.__http.check_http_state_ok(response)
+        #     return self.__http.get_json_and_check_for_ok(content)
+        # except Exception:
+        #     Logger().print_exception(f'Failed to activate points booster!')
+        #     return None

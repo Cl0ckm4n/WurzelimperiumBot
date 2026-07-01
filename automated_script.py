@@ -48,6 +48,7 @@ def main():
         if wurzelBot.biogas is not None:
             wurzelBot.check_biogas()
 
+        wurzelBot.check_booster(wurzelBot.note.get_bee_booster())
         wurzelBot.send_bees(tour=1)
         # Remove weed
         # BG-Премахване на плевели

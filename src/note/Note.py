@@ -16,6 +16,7 @@ class NoteSettings(Enum):
     WATERGARDEN_PLANT_2 = "watergardenPlant2:"
     WATERGARDEN_PLANT_EDGE = "watergardenPlantEdge:"
     BEE_HIVES = "beeHives:"
+    BEE_BOOSTER = "beeBooster:"
     IVY_TYPE = "ivy:"
     HERBGARDEN_ACTIVE = "herbgarden:"
     MEGAFRUIT = "megafruit:"
@@ -37,6 +38,7 @@ class Note:
         self._watergarden_plant_2 = None
         self._watergarden_plant_edge = None
         self._bee_hives = None
+        self._bee_booster = None
         self._ivy = None
         self._herbgarden_active = False
         self._megafruit_plant = Mushroom.MUSHROOM
@@ -70,6 +72,9 @@ class Note:
     
     def get_bee_hive(self) -> str:
         return self._bee_hives
+    
+    def get_bee_booster(self) -> str:
+        return self._bee_booster
     
     def get_ivy(self) -> str:
         return self._ivy
@@ -211,6 +216,10 @@ class Note:
                             case "9": tree_id = ASH
                             case "10": tree_id = CHERRY_TREE
                         self._bonsai_tree = tree_id
+                    elif setting == NoteSettings.BEE_HIVES:
+                        self._bee_hives = line
+                    elif setting == NoteSettings.BEE_BOOSTER:
+                        self._bee_booster = line
                     elif setting == NoteSettings.MUSEUM_BOOSTER:
                         self._museum_booster = line
                     elif setting == NoteSettings.MINE_DINO_ACTIVE:

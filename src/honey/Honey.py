@@ -91,6 +91,52 @@ class Honey:
         Logger().info(f"Changed all hive types to: {honey_pid}")
         return True
 
+    def check_boosters(self, booster):
+        print('➡ src/honey/Honey.py:95 booster:', booster)
+        if not self.check_start_hives():
+            print("No hives to start! Use your booster efficiently ;)")
+            return False
+        for index, character in enumerate(booster, start=1):
+            print('➡ src/honey/Honey.py:99 index:', index)
+            print('➡ src/honey/Honey.py:99 character:', character)
+            if index == 1 and character == "1":
+                print("\n 1 ")
+                booster_depleted = self.__check_booster_remain(str(index))
+                print('➡ src/honey/Honey.py:98 test:', booster_depleted)
+                print(index, character)
+                if booster_depleted:
+                    self.__http.activate_speed_booster()
+            if index == 2 and character == "1":
+                print("\n 2 ")
+                booster_depleted = self.__check_booster_remain(str(index))
+                print('➡ src/honey/Honey.py:98 test:', booster_depleted)
+                print(index, character)
+                if booster_depleted:
+                    self.__http.activate_yield_booster()
+            if index == 3 and character == "1":
+                print("\n 3 ")
+                booster_depleted = self.__check_booster_remain(str(index))
+                print('➡ src/honey/Honey.py:98 test:', booster_depleted)
+                print(index, character)
+                if booster_depleted:
+                    self.__http.activate_points_booster()
+
+    def __check_booster_remain(self, booster_nr: str):
+        print('➡ src/honey/Honey.py:119 booster_nr:', booster_nr)
+        print('➡ src/honey/Honey.py:119 booster_nr:', type(booster_nr))
+        booster = self.__data.get("data", {}).get("data", {}).get("booster", {})
+        print('➡ src/honey/Honey.py:109 booster:', booster)
+        print(list(booster.keys()))
+        if not booster_nr in list(booster.keys()): #booster never used if not in the list
+            print("EXIT11")
+            return False
+        booster_remain = booster.get(booster_nr, {}).get("remain", 999999)
+        print('➡ src/honey/Honey.py:113 booster_remain:', booster_remain)
+        if booster_remain > 0:
+            print("EXIT12")
+            return False
+        return True
+
     # Wimps
 
     def get_wimps_data(self):
