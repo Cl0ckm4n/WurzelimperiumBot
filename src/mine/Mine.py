@@ -260,7 +260,6 @@ class Mine:
             print('➡ src/mine/Mine.py:169 setup:', setup)
             content = self.__http.start_worker(setup)
             self.__set_data(content)
-            break
 
     def __craft_dino_item(self, item_name) -> int:
         items = []
