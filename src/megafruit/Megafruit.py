@@ -7,7 +7,15 @@ from src.megafruit.MegafruitData import Mushroom, Care_OID, Care, is_fertilize_c
 from src.core.User import User
 
 class Megafruit:
-    def __init__(self):
+    _instance = None
+
+    def __new__(self):
+        if self._instance is None:
+            self._instance = super(Megafruit, self).__new__(self)
+            self._instance.__initClass()
+        return self._instance
+
+    def __initClass(self):
         self.__http = Http()
         self.__data = None
         self.update()
@@ -82,6 +90,9 @@ class Megafruit:
 
     def get_spores(self) -> int:
         return int(self.__data['count'])
+
+    def get_level(self) -> int:
+        return self.__data['level']
 
     def get_unlocked_care_items(self) -> list:
         items = [ Care_OID.WATER_1.value ]

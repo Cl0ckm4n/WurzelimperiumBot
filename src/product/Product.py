@@ -9,6 +9,8 @@ Created on 23.01.2019
 
 import datetime
 from src.logger.Logger import Logger
+from src.core.User import User
+from src.megafruit.Megafruit import Megafruit
 
 CATEGORY_DECORATION       = 'd'
 CATEGORY_HERBS            = 'h'
@@ -61,8 +63,21 @@ class Product:
     def get_growing_time(self):
         return self.__time_until_harvest
 
-    def get_level(self):
+    def get_level(self) -> int:
         return self.__level
+    
+    def is_product_unlocked(self) -> bool: #TODO: special-cases for watergarden, ...
+        if self.__id == 268:
+            return 4 <= Megafruit().get_level()
+        if self.__id == 269:
+            return 8 <= Megafruit().get_level()
+        if self.__id == 270:
+            return 12 <= Megafruit().get_level()
+        if self.__id == 271:
+            return 16 <= Megafruit().get_level()
+        if self.__id == 272:
+            return 20 <= Megafruit().get_level()
+        return self.__level <= User().get_level()
 
     def is_plantable(self):
         return self.__is_plantable

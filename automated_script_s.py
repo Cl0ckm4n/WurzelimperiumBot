@@ -91,7 +91,7 @@ def main():
             wurzelBot.cut_and_renew_bonsais(bonsai=wurzelBot.note.get_bonsai_tree(), allowed_prices=['money'], pot=wurzelBot.note.get_bonsai_pot())
 
         if wurzelBot.birds is not None:
-            wurzelBot.check_birds(bird_nr=1)
+            wurzelBot.check_birds(bird_nr=3)
         
         if wurzelBot.mine is not None:
             wurzelBot.check_mine(wurzelBot.note.get_mine_dino_active(), wurzelBot.note.get_mine_dino_fav())

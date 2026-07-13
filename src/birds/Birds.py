@@ -287,15 +287,23 @@ class Birds:
 
         # select (boosted) products and start bird/contest
         boosted_products = self.__contest.get("booster", None) #list
+        contest_products = self.__data.get("config", {}).get("contest", {}).get("valid", {}) #list
+        contest_products = [x for x in contest_products if x not in boosted_products]
         last_entry = self.__contest.get("entry", {}).get("products", {})# dict with pid: amount
         last_entry = {int(k):int(v) for k,v in last_entry.items()} #convert str to int
         last_entry_products = list(last_entry.keys()) #convert dict to list
+        boosted_products_available.sort()
         Logger().debug(f'➡ src/birds/Birds.py:269 last_entry_products: {last_entry_products}')
         boosted_products_available = [x for x in boosted_products if x not in last_entry]
+        boosted_products_available.sort()
         Logger().debug(f'➡ src/birds/Birds.py:273 boosted_products_available: {boosted_products_available}')
 
         products = {"1":{},"2":{},"3":{}}#{"1":{"pid":17,"amount":5},"2":{"pid":32,"amount":71},"3":{"pid":35,"amount":53}}
-        job_products = boosted_products_available[:3] #select first 3 boosted products
+        job_products = self.__get_available_contest_products(boosted_products_available)
+        if len(job_products) < 3:
+            job_products = job_products + self.__get_available_contest_products(contest_products)
+        job_products = job_products[:3] #select first 3 boosted products
+
         Logger().debug(f'➡ src/birds/Birds.py:276 job_products: {job_products}')
         counter=1
         load_max = self.__get_house_bird_load_max(house)*200
@@ -317,3 +325,10 @@ class Birds:
         Logger().info("\n\n\n ### START CONTEST ###")
         content = self.__http.start_contest(house, products)
         self.__set_data(content)
+
+    def __get_available_contest_products(self, products: list) -> list:
+        job_products = []
+        for pid in products:
+            if not ProductData().get_product_by_id(pid).is_product_unlocked(): continue
+            job_products.append(pid)
+        return job_products
