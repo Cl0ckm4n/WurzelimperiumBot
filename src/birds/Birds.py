@@ -292,7 +292,6 @@ class Birds:
         last_entry = self.__contest.get("entry", {}).get("products", {})# dict with pid: amount
         last_entry = {int(k):int(v) for k,v in last_entry.items()} #convert str to int
         last_entry_products = list(last_entry.keys()) #convert dict to list
-        boosted_products_available.sort()
         Logger().debug(f'➡ src/birds/Birds.py:269 last_entry_products: {last_entry_products}')
         boosted_products_available = [x for x in boosted_products if x not in last_entry]
         boosted_products_available.sort()
