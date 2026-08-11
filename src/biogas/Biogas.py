@@ -124,7 +124,7 @@ class Biogas:
                     print("EXIT 2")
                     continue
 
-                production_area = material_data.get("stock_category", None)
+                production_area = material_data.get("category", None)
                 print('➡ src/biogas/Biogas.py:170 production_area:', production_area)
                 free_slots = self.__get_free_production_area_slots(production_area)
                 if not len(free_slots) > 0:
