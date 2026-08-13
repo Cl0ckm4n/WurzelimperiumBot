@@ -33,12 +33,12 @@ class Biogas:
 
     def __set_targets(self): #wenn target, skip production von diesem
         self.__stock_targets = {}
-        self.__stock_targets.update({"soil1": self.__get_stock_capacity("compost") * 0.4})
+        self.__stock_targets.update({"soil1": self.__get_stock_capacity("compost") * 0.35})
         self.__stock_targets.update({"soil2": self.__get_stock_capacity("compost") * 0.2})
         self.__stock_targets.update({"soil3": self.__get_stock_capacity("compost") * 0.15})
         self.__stock_targets.update({"soil4": self.__get_stock_capacity("compost") * 0.08})
         self.__stock_targets.update({"soil5": self.__get_stock_capacity("compost") * 0.05})
-        self.__stock_targets.update({"fertilizer1": self.__get_stock_capacity("muck") * 0.4})
+        self.__stock_targets.update({"fertilizer1": self.__get_stock_capacity("muck") * 0.35})
         self.__stock_targets.update({"fertilizer2": self.__get_stock_capacity("muck") * 0.2})
         self.__stock_targets.update({"fertilizer3": self.__get_stock_capacity("muck") * 0.15})
         self.__stock_targets.update({"fertilizer4": self.__get_stock_capacity("muck") * 0.08})
@@ -205,10 +205,10 @@ class Biogas:
             free = self.__get_stock_capacity(production_area) - muck_stock
         elif production_area == "fermenter":
             free = self.__get_stock_capacity(production_area) - self.__get_material_stock("biogas")
-        elif production_area == "powerhouse":
+        elif production_area == "powerhouse": #contains resources: energy & powerhouse/heat
             powerhouse_stock = 0
-            powerhouse_stock = self.__get_material_stock(f"energy") + self.__get_material_stock(f"heat")
-            free = self.__get_stock_capacity(production_area) - powerhouse_stock
+            powerhouse_stock = self.__get_material_stock("energy") + self.__get_material_stock("heat")
+            free = self.__get_stock_capacity(production_area) + self.__get_stock_capacity("energy") - powerhouse_stock
         return free
 
     def __get_material_stock(self, material) -> int:
