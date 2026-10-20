@@ -28,8 +28,9 @@ class HerbGarden(Garden):
         if jContent is None:
             return False
         self.__jContent = jContent
-        self.__info = self.__jContent['info']
-        self.__weed = self.__jContent['weed']
+        if self.__jContent.get('info', {}):
+            self.__info = self.__jContent.get('info', {})
+        # self.__weed = self.__jContent.get('weed', {})
         return True
 
     def _isPlantGrowableOnField(self, fieldID, emptyFields):
