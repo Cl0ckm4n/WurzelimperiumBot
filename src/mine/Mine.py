@@ -60,9 +60,9 @@ class Mine:
             lowest_level_worker.update({worker_slot: worker_level})
         print('➡ src/mine/Mine.py:56 lowest_level_worker:', lowest_level_worker)
 
-        sorted_dict = dict(sorted(lowest_level_worker.items(), key=lambda item: item[1])) 
-        print('➡ src/mine/Mine.py:62 sorted_dict:', sorted_dict)
-        return sorted_dict
+        # sorted_dict = dict(sorted(lowest_level_worker.items(), key=lambda item: item[1])) 
+        # print('➡ src/mine/Mine.py:62 sorted_dict:', sorted_dict)
+        return lowest_level_worker #TODO: changed so always first available worker gets picked
     
     def __get_worker_energy(self, worker_slot) -> int:
         return int(self.__data.get("worker", {}).get(worker_slot, {}).get("energy", 999))
