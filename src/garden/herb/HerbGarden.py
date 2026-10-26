@@ -41,7 +41,7 @@ class HerbGarden(Garden):
 
     def harvest(self) -> bool:
         # TODO: proof if any harvestable
-        jContent = self.__httpHerb.harvest()
+        jContent = self.__httpHerb.harvest(self._id)
         if jContent is None:
             return False
         if jContent['status'] == 'error':

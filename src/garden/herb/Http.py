@@ -9,8 +9,8 @@ class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 
-    def harvest(self):
-        address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__http.token()}'
+    def harvest(self, garden_id):
+        address = f'ajax/ajax.php?do=gardenHarvestAll&garden={garden_id}&token={self.__http.token()}'
         try:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
