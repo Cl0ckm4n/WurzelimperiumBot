@@ -137,3 +137,11 @@ class Feature:
             return self.__city_data['data']['location']['mine']['bought'] == 1
         else:
             return False
+        
+    def is_molegarden_available(self) -> bool:
+        if User().get_level() < 35:
+            return False
+        if 'molegarden' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['molegarden']['bought'] == 1
+        else:
+            return False

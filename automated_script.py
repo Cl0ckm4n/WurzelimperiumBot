@@ -118,6 +118,9 @@ def main():
             megafruit = wurzelBot.note.get_megafruit_plant()
             wurzelBot.check_megafruit(mushroom=megafruit, buy_from_shop=True, allowed_care_item_prices = ['money'])
 
+        if wurzelBot.molegarden is not None:
+            wurzelBot.do_molegarden_quest()
+
         if wurzelBot.note.get_herbgarden_active():
             wurzelBot.check_herb_garden()
         wurzelBot.check_greenhouse()

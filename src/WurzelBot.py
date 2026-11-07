@@ -24,6 +24,7 @@ from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.garden.Garden import Garden
 from src.garden.Garden import Http as Garden_Http
 from src.garden.herb.HerbGarden import HerbGarden
+from src.garden.molegarden.Molegarden import Molegarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.ivyhouse.Ivyhouse import Ivyhouse
@@ -80,6 +81,7 @@ class WurzelBot:
         self.birds = None
         self.museum = None
         self.mine = None
+        self.molegarden = None
 
 
     def __init_gardens(self) -> bool:
@@ -140,6 +142,9 @@ class WurzelBot:
             
             if Feature().is_decogarden_available():
                 self.decogarden1 = Decogarden1()
+            
+            if Feature().is_molegarden_available():
+                self.molegarden = Molegarden()
 
             return True
 
