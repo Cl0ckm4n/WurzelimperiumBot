@@ -854,3 +854,7 @@ class WurzelBot:
     def check_biogas(self):
         self.biogas.harvest_productions()
         self.biogas.start_worker()
+
+    #Molegarden
+    def do_molegarden_quest(self):
+        self.molegarden.do_quest()
